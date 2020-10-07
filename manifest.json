@@ -1,0 +1,41 @@
+{
+    "content_scripts": [
+        {
+            "matches": ["*://github.com/*"],
+            "js": ["lib/browser-polyfill.min.js", "content_scripts/moment.min.js", "content_scripts/redact.js"]
+        }
+    ],
+    "background": {
+        "scripts": ["background/init.js"]
+    },
+    "description": "Redacts timestamps on GitHub",
+    "homepage_url": "https://github.com/vogellacompany",
+    "manifest_version": 2,
+    "name": "GitHub Timestamp Redaction",
+    "icons": {
+        "48": "icons/dwarf-48.png",
+        "96": "icons/dwarf-96.png"
+    },
+    "options_ui": {
+        "page": "options/options.html",
+        "browser_style": true
+    },
+    "permissions": ["storage", "activeTab"],
+    "browser_action": {
+        "default_icon": "icons/dwarf-32.png",
+        "theme_icons": [{
+            "light": "icons/dwarf-32.png",
+            "dark": "icons/dwarf-32.png",
+            "size": 32
+        }],
+        "default_title": "Redact",
+        "default_popup": "popup/popup.html"
+    },
+    "version": "0.1",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "github-redact-timestamp@vogella.com",
+            "strict_min_version": "57.0"
+        }
+    }
+}

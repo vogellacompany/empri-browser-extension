@@ -1,0 +1,14 @@
+#popup-content > .button {
+    width: 100px;
+    cursor: pointer;
+    border: 1px solid red;
+    margin: .7em;
+}
+
+#popup-content > .button.on-off.on {
+    background-color: #2ECC40;
+}
+
+#popup-content > .button.on-off.off {
+    background-color: #FF4136;
+}
