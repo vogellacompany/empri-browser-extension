@@ -10,22 +10,41 @@
   browser.storage.sync.get("ghrOn").then((res) => {
     console.log(res);
     if (!res.ghrOn) {
-      alert("not on");
       console.log("Git-privacy deactivated");
       return;
     }
   });
 
   function redact(el) {
-    // TODO(FAP): read redaction pattern from storage, cache redaction pattern booleans?
-    let datetimeMoment = moment(el.getAttribute("datetime"));
-    datetimeMoment
-      .startOf("day")
-      .startOf("hour")
-      .startOf("minute")
-      .startOf("month");
-    el.setAttribute("datetime", datetimeMoment.format());
-    el.setAttribute("redacted", true);
+    browser.storage.sync
+      .get([
+        "ghrRedactMonth",
+        "ghrRedactDay",
+        "ghrRedactHours",
+        "ghrRedactMinutes",
+        "ghrRedactSeconds",
+      ])
+      .then((res) => {
+        let datetimeMoment = moment(el.getAttribute("datetime"));
+        if (res.ghrRedactMonth) {
+          datetimeMoment = datetimeMoment.startOf("month");
+        }
+        if (res.ghrRedactDay) {
+          datetimeMoment = datetimeMoment.startOf("day");
+        }
+        if (res.ghrRedactHours) {
+          datetimeMoment = datetimeMoment.startOf("hour");
+        }
+        if (res.ghrRedactMinutes) {
+          datetimeMoment = datetimeMoment.startOf("minute");
+        }
+        if (res.ghrRedactSeconds) {
+          datetimeMoment = datetimeMoment.startOf("second");
+        }
+
+        el.setAttribute("datetime", datetimeMoment.format());
+        el.setAttribute("redacted", true);
+      });
   }
 
   console.log("Redacting timestamps");

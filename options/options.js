@@ -1,6 +1,12 @@
 function saveOptions(e) {
+  let pattern = document.querySelector("#redaction-pattern").value;
   browser.storage.sync.set({
-    redactionPattern: document.querySelector("#redaction-pattern").value,
+    redactionPattern: pattern,
+    ghrRedactMonth: pattern.includes("M"),
+    ghrRedactDay: pattern.includes("d"),
+    ghrRedactHours: pattern.includes("h"),
+    ghrRedactMinutes: pattern.includes("m"),
+    ghrRedactSeconds: pattern.includes("s"),
   });
   e.preventDefault();
 }
