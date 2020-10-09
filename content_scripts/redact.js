@@ -3,6 +3,7 @@
     return;
   }
   window.ghRedactHasRun = true;
+  let DateTime = luxon.DateTime;
 
   // TODO(FAP): listen for storage changes and show original dates again?
   // browser.storage.onChanged.addListener(callback)
@@ -25,24 +26,24 @@
         "ghrRedactSeconds",
       ])
       .then((res) => {
-        let datetimeMoment = moment(el.getAttribute("datetime"));
+        let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
         if (res.ghrRedactMonth) {
-          datetimeMoment = datetimeMoment.startOf("month");
+          dateTime = dateTime.startOf("month");
         }
         if (res.ghrRedactDay) {
-          datetimeMoment = datetimeMoment.startOf("day");
+          dateTime = dateTime.startOf("day");
         }
         if (res.ghrRedactHours) {
-          datetimeMoment = datetimeMoment.startOf("hour");
+          dateTime = dateTime.startOf("hour");
         }
         if (res.ghrRedactMinutes) {
-          datetimeMoment = datetimeMoment.startOf("minute");
+          dateTime = dateTime.startOf("minute");
         }
         if (res.ghrRedactSeconds) {
-          datetimeMoment = datetimeMoment.startOf("second");
+          dateTime = dateTime.startOf("second");
         }
 
-        el.setAttribute("datetime", datetimeMoment.format());
+        el.setAttribute("datetime", dateTime.toISO());
         el.setAttribute("redacted", true);
       });
   }
