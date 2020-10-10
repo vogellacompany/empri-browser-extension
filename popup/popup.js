@@ -13,14 +13,23 @@ function setButtonClass() {
 setButtonClass();
 
 function toggleOnOff(e) {
-  // TODO(FAP): change browser bar icon when deactivated?
+  let icons = {
+    on: "../icons/dwarf_walking_orange.svg",
+    off: "../icons/dwarf_walking_grey.svg",
+  };
+
   let button = e.currentTarget;
   browser.storage.sync.get("ghrOn").then((res) => {
+    let newState = !res.ghrOn;
     browser.storage.sync
       .set({
-        ghrOn: !res.ghrOn,
+        ghrOn: newState,
       })
-      .then(() => setButtonClass());
+      .then(() => {
+        setButtonClass();
+        let icon = newState ? icons.on : icons.off;
+        browser.browserAction.setIcon({ path: icon });
+      });
   });
 }
 
