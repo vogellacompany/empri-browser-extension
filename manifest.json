@@ -13,8 +13,11 @@
   "manifest_version": 2,
   "name": "GitHub Timestamp Redaction",
   "icons": {
-    "48": "icons/dwarf-48.png",
-    "96": "icons/dwarf-96.png"
+    "16": "icons/dwarf_walking_orange.svg",
+    "32": "icons/dwarf_walking_orange.svg",
+    "48": "icons/dwarf_walking_orange.svg",
+    "96": "icons/dwarf_walking_orange.svg",
+    "128": "icons/dwarf_walking_orange.svg"
   },
   "options_ui": {
     "page": "options/options.html",
@@ -22,10 +25,10 @@
   },
   "permissions": ["storage", "activeTab"],
   "browser_action": {
-    "default_icon": "icons/dwarf-32.png",
+    "default_icon": "icons/dwarf_walking_orange.svg",
     "theme_icons": [{
-      "light": "icons/dwarf-32.png",
-      "dark": "icons/dwarf-32.png",
+      "light": "icons/dwarf_walking_orange.svg",
+      "dark": "icons/dwarf_walking_orange.svg",
       "size": 32
     }],
     "default_title": "Redact",
