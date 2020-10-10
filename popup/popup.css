@@ -12,3 +12,5 @@
 #popup-content > .button.on-off.off {
     background-color: #FF4136;
 }
+
+/* TODO(FAP): use tailwind to make popup buttons look nice? */
