@@ -122,8 +122,8 @@
       timelineTimestamps.forEach((el) => {});
     }
 
-    // TODO(FAP): react to tab change on PR page (check GitHub events on infopage)
     redactTimelineTimestamps();
+    document.addEventListener("pjax:end", redactTimelineTimestamps); // content change without full page load
 
     console.log("Initializing git-privacy MutationObserver");
     let observer = new MutationObserver((mutations) => {
