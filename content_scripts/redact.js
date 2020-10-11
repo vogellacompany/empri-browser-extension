@@ -55,7 +55,7 @@
     redactTimestamps();
 
     function redactTimelineItem(el) {
-      browser.storage.sync
+      return browser.storage.sync
         .get([
           "ghrRedactMonth",
           "ghrRedactDay",
@@ -82,9 +82,7 @@
           if (res.ghrRedactSeconds) {
             dateTime = dateTime.startOf("second");
           }
-          console.log("####");
-          console.log(el);
-          console.log(dateTime);
+
           el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
           el.setAttribute("redacted", true);
         });
@@ -92,13 +90,39 @@
 
     // https://github.com/user/repo/commits/master
     // https://github.com/user/repo/pull/42/commits
-    function redactTimelineTimestamps() {
-      document.querySelectorAll(".TimelineItem-body > .f5").forEach((el) => {
-        redactTimelineItem(el);
-        // TODO(FAP): join days that show the same date now?
-      });
+    async function redactTimelineTimestamps() {
+      let timelineTimestamps = document.querySelectorAll(
+        ".TimelineItem-body > .f5"
+      );
+      await Promise.all(
+        Array.from(timelineTimestamps).map((el) => {
+          return redactTimelineItem(el);
+        })
+      );
+
+      for (let i = 0; i < timelineTimestamps.length; i++) {
+        if (timelineTimestamps.item(i).parentElement.parentElement == null) {
+          continue;
+        }
+
+        let currentEl = timelineTimestamps.item(i);
+        let currentElParent = currentEl.parentElement;
+        for (let j = i + 1; j < timelineTimestamps.length; j++) {
+          var nextEl = timelineTimestamps.item(j);
+          var nextElParent = nextEl.parentElement;
+          if (!(currentEl.textContent === nextEl.textContent)) {
+            break;
+          }
+          nextElParent.querySelectorAll("ol > li").forEach((li) => {
+            currentElParent.querySelector("ol").append(li);
+          });
+          nextElParent.parentElement.remove();
+        }
+      }
+      timelineTimestamps.forEach((el) => {});
     }
 
+    // TODO(FAP): react to tab change on PR page (check GitHub events on infopage)
     redactTimelineTimestamps();
 
     console.log("Initializing git-privacy MutationObserver");
