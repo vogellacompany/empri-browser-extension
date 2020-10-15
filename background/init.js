@@ -6,4 +6,5 @@ browser.storage.sync.get("ghrOn").then((res) => {
   } else if (!res.ghrOn) {
     browser.browserAction.setIcon({ path: "../icons/off.svg" });
   }
+  // TODO(FAP): set initial pattern to "hms" on first load?
 });
