@@ -16,8 +16,8 @@ setButtonState();
 
 function toggleOnOff(e) {
   let icons = {
-    on: "../icons/dwarf_walking_orange.svg",
-    off: "../icons/dwarf_walking_grey.svg",
+    on: "../icons/on.svg",
+    off: "../icons/off.svg",
   };
 
   let button = e.currentTarget;

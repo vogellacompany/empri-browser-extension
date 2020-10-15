@@ -3,6 +3,7 @@ browser.storage.sync.get("ghrOn").then((res) => {
     browser.storage.sync.set({
       ghrOn: true,
     });
+  } else if (!res.ghrOn) {
+    browser.browserAction.setIcon({ path: "../icons/off.svg" });
   }
-  // TODO(FAP): set icon depending on "on"/"off" state? (test with full install
 });
