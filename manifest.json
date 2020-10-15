@@ -2,7 +2,7 @@
   "content_scripts": [
     {
       "matches": ["*://github.com/*"],
-      "js": ["lib/browser-polyfill.min.js", "content_scripts/luxon.min.js", "content_scripts/redact.js"]
+      "js": ["lib/browser-polyfill.min.js", "lib/luxon.min.js", "content_scripts/redact.js"]
     }
   ],
   "background": {

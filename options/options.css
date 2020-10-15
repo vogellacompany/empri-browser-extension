@@ -1,0 +1,19 @@
+.content {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 1em;
+}
+
+.content > * {
+    flex: 1 1 0px;
+    margin: 0 .5em;
+}
+
+.redaction-pattern > button {
+    float: right;
+    margin-top: .5em;
+}
+
+.example > input {
+    width: 100%;
+}

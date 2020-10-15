@@ -26,19 +26,19 @@
         .then((res) => {
           let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
           if (res.ghrRedactMonth) {
-            dateTime = dateTime.startOf("month");
+            dateTime = dateTime.set({ month: 1 });
           }
           if (res.ghrRedactDay) {
-            dateTime = dateTime.startOf("day");
+            dateTime = dateTime.set({ day: 1 });
           }
           if (res.ghrRedactHours) {
-            dateTime = dateTime.startOf("hour");
+            dateTime = dateTime.set({ hour: 0 });
           }
           if (res.ghrRedactMinutes) {
-            dateTime = dateTime.startOf("minute");
+            dateTime = dateTime.set({ minute: 0 });
           }
           if (res.ghrRedactSeconds) {
-            dateTime = dateTime.startOf("second");
+            dateTime = dateTime.set({ second: 0 });
           }
           el.setAttribute("datetime", dateTime.toISO());
           el.setAttribute("redacted", true);
@@ -68,19 +68,19 @@
           let text = el.textContent.substring(11);
           let dateTime = DateTime.fromFormat(text, "MMM d, y");
           if (res.ghrRedactMonth) {
-            dateTime = dateTime.startOf("month");
+            dateTime = dateTime.set({ month: 1 });
           }
           if (res.ghrRedactDay) {
-            dateTime = dateTime.startOf("day");
+            dateTime = dateTime.set({ day: 1 });
           }
           if (res.ghrRedactHours) {
-            dateTime = dateTime.startOf("hour");
+            dateTime = dateTime.set({ hour: 0 });
           }
           if (res.ghrRedactMinutes) {
-            dateTime = dateTime.startOf("minute");
+            dateTime = dateTime.set({ minute: 0 });
           }
           if (res.ghrRedactSeconds) {
-            dateTime = dateTime.startOf("second");
+            dateTime = dateTime.set({ second: 0 });
           }
 
           el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");

@@ -1,16 +1,41 @@
+#popup-content {
+    margin: 1em auto;
+}
+
 #popup-content > .button {
     width: 100px;
     cursor: pointer;
     border: 1px solid red;
     margin: .7em;
+    -webkit-border-radius: 2;
+    -moz-border-radius: 2;
+    border-radius: 2px;
+    color: #111111;
+    font-size: 16px;
+    text-align: center;
+    background: hsl(0, 0%, 88%);
+    padding: .3rem .7rem .3rem .7rem;
+    border: solid #111111 1px;
+    text-decoration: none;
+}
+
+#popup-content > .button:hover {
+    background: hsl(0, 0%, 84%);
+    text-decoration: none;
 }
 
 #popup-content > .button.on-off.on {
-    background-color: #2ECC40;
+    background-color: hsl(127, 63%, 55%);
+}
+
+#popup-content > .button.on-off.on:hover {
+    background-color: hsl(127, 63%, 51%);
 }
 
 #popup-content > .button.on-off.off {
-    background-color: #FF4136;
+    background-color: hsl(3, 100%, 61%);
 }
 
-/* TODO(FAP): use tailwind to make popup buttons look nice? */
+#popup-content > .button.on-off.off:hover {
+    background-color: hsl(3, 100%, 50%);
+}

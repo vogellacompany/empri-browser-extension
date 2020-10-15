@@ -1,16 +1,18 @@
-function setButtonClass() {
+function setButtonState() {
   browser.storage.sync.get("ghrOn").then((res) => {
     let onOffButton = document.querySelector(".on-off");
     if (res.ghrOn) {
       onOffButton.classList.remove("off");
       onOffButton.classList.add("on");
+      onOffButton.textContent = "On";
     } else {
       onOffButton.classList.remove("on");
       onOffButton.classList.add("off");
+      onOffButton.textContent = "Off";
     }
   });
 }
-setButtonClass();
+setButtonState();
 
 function toggleOnOff(e) {
   let icons = {
@@ -26,7 +28,7 @@ function toggleOnOff(e) {
         ghrOn: newState,
       })
       .then(() => {
-        setButtonClass();
+        setButtonState();
         let icon = newState ? icons.on : icons.off;
         browser.browserAction.setIcon({ path: icon });
       });
