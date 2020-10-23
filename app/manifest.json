@@ -1,0 +1,55 @@
+{
+  "name": "__MSG_appName__",
+  "short_name": "__MSG_appShortName__",
+  "description": "__MSG_appDescription__",
+  "homepage_url": "https://empri-devops.de",
+  "version": "0.1",
+  "manifest_version": 2,
+  "default_locale": "en",
+  "icons": {
+    "16":  "images/on.svg",
+    "32":  "images/on.svg",
+    "48":  "images/on.svg",
+    "96":  "images/on.svg",
+    "128": "images/on.svg"
+  },
+  "background": {
+    "scripts": [
+      "scripts/background.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "images/on.svg",
+      "38": "images/on.svg"
+    },
+    "default_title": "__MSG_browserActionTitle__",
+    "default_popup": "pages/popup.html"
+  },
+  "options_page": "pages/options.html",
+  "options_ui": {
+    "page": "pages/options.html",
+    "browser_style": true,
+    "__chrome|opera__chrome_style": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://github.com/*"],
+      "css": [
+        "styles/contentscript.css"
+      ],
+      "js": ["scripts/redact.js"]
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "github-privacy@vogella.com",
+      "strict_min_version": "79.0"
+    }
+  }
+
+}

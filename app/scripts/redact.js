@@ -1,9 +1,10 @@
+import { DateTime } from "luxon";
+
 (() => {
   if (window.ghRedactHasRun) {
     return;
   }
   window.ghRedactHasRun = true;
-  let DateTime = luxon.DateTime;
 
   // TODO(FAP): listen for storage changes and show original dates again?
   // browser.storage.onChanged.addListener(callback)

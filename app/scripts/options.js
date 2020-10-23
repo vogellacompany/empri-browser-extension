@@ -1,5 +1,6 @@
+import { DateTime } from "luxon";
+
 (() => {
-  let DateTime = luxon.DateTime;
   let fieldset = document.querySelector(".redaction-pattern");
   let month = fieldset.querySelector("#month");
   let day = fieldset.querySelector("#day");
@@ -55,7 +56,9 @@
     if (second.checked) {
       dateTime = dateTime.set({ second: 0 });
     }
-    exampleField.value = dateTime.toHTTP();
+    let v = dateTime.toFormat("yyyy-MM-dd'T'hh:mm:ss");
+    console.log(v);
+    exampleField.value = v;
   }
 
   document.addEventListener("DOMContentLoaded", restoreOptions);
