@@ -1,5 +1,5 @@
 #popup-content {
-    margin: 1em auto;
+    margin: 1em auto; /* TODO(FAP): why does this not center in firefox sidebar mode? */
 }
 
 #popup-content > .button {
