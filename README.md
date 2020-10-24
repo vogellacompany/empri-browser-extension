@@ -1,6 +1,5 @@
 # GitHub Privacy
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
 ## Install
 
@@ -9,10 +8,11 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor 
 ## Development
 
     yarn run dev chrome
-    chromium-browser --load-extension="/home/fap/repos/empri-devops/github-privacy/dist/chrome/"
+    chromium-browser --load-extension="<PATH>/empri-devops/github-privacy/dist/chrome/"
     yarn run dev firefox
     yarn run dev opera
     yarn run dev edge
+    microsoft-edge --load-extension="<PATH>/github-privacy/dist/chrome/"
 
 ## Build
 
@@ -28,3 +28,7 @@ The build tool also defines a variable named `process.env.NODE_ENV` in your scri
 ## Docs
 
 * [webextension-toolbox](https://github.com/HaNdTriX/webextension-toolbox)
+
+## EMPRI-DEVOPS
+
+This extension is being developed as part of the [EMPRI-DEVOPS](https://empri-devops.de/) research project.
