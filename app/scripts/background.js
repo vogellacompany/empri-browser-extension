@@ -9,6 +9,11 @@ browser.storage.sync.get("ghrOn").then((res) => {
       ghrRedactSeconds: true,
     });
   } else if (!res.ghrOn) {
-    browser.browserAction.setIcon({ path: "../icons/off.svg" });
+    browser.browserAction.setIcon({
+      path: {
+        19: "../images/off-19.png",
+        38: "../images/off-38.png",
+      },
+    });
   }
 });

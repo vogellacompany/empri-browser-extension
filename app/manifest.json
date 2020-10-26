@@ -7,11 +7,11 @@
   "manifest_version": 2,
   "default_locale": "en",
   "icons": {
-    "16":  "images/on.svg",
-    "32":  "images/on.svg",
-    "48":  "images/on.svg",
-    "96":  "images/on.svg",
-    "128": "images/on.svg"
+    "16":  "images/on-16.png",
+    "32":  "images/on-32.png",
+    "48":  "images/on-48.png",
+    "96":  "images/on-96.png",
+    "128": "images/on-128.png"
   },
   "background": {
     "scripts": [
@@ -20,8 +20,8 @@
   },
   "browser_action": {
     "default_icon": {
-      "19": "images/on.svg",
-      "38": "images/on.svg"
+      "19": "images/on-19.png",
+      "38": "images/on-38.png"
     },
     "default_title": "__MSG_browserActionTitle__",
     "default_popup": "pages/popup.html"

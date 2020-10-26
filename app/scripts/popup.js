@@ -16,8 +16,14 @@ setButtonState();
 
 function toggleOnOff(e) {
   let icons = {
-    on: "../images/on.svg",
-    off: "../images/off.svg",
+    on: {
+      19: "../images/on-19.png",
+      38: "../images/on-38.png",
+    },
+    off: {
+      19: "../images/off-19.png",
+      38: "../images/off-38.png",
+    },
   };
 
   let button = e.currentTarget;
