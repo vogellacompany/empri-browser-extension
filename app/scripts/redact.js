@@ -123,7 +123,11 @@ import { DateTime } from "luxon";
     }
 
     redactTimelineTimestamps();
-    document.addEventListener("pjax:end", redactTimelineTimestamps); // content change without full page load
+    document.addEventListener("pjax:end", function () {
+      // content change without full page load
+      redactTimelineTimestamps();
+      redactTimestamps();
+    });
 
     console.log("Initializing git-privacy MutationObserver");
     let observer = new MutationObserver((mutations) => {
