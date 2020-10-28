@@ -10,7 +10,6 @@ import { DateTime } from "luxon";
   // browser.storage.onChanged.addListener(callback)
 
   browser.storage.sync.get("ghrOn").then((res) => {
-    console.log(res);
     if (!res.ghrOn) {
       console.log("Git-privacy deactivated");
       return;
