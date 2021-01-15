@@ -41,7 +41,6 @@
     }
   ],
   "permissions": [
-    "activeTab",
     "storage"
   ],
   "browser_specific_settings": {
