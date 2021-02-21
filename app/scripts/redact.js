@@ -16,20 +16,26 @@ import { DateTime } from "luxon";
     }
     function createPopup(){
       console.log("Open popup");
-      // - insert div around ts element
+      // - insert div around ts element if not already present
       // TODO-CB Maybe remove divs after menu closing to tidy up DOM?
       // https://stackoverflow.com/a/11601108
-      var ddwrapper = document.createElement("div");
-      ddwrapper.classList.add("dropdown");
       var parent = this.parentNode;
-      parent.insertBefore(ddwrapper, this);
-      ddwrapper.appendChild(this);
-      var ddcontent = document.createElement("div");
-      ddcontent.classList.add("dropdown-content");
-      ddwrapper.appendChild(ddcontent);
-      var dditem1 = document.createElement("a");
-      dditem1.innerHTML = "Dummy";
-      ddcontent.appendChild(dditem1);
+      if (!parent.classList.contains("dropdown")) {
+        var ddwrapper = document.createElement("div");
+        ddwrapper.classList.add("dropdown");
+        parent.insertBefore(ddwrapper, this);
+        ddwrapper.appendChild(this);
+        var ddcontent = document.createElement("div");
+        ddcontent.classList.add("dropdown-content");
+        ddwrapper.appendChild(ddcontent);
+        var dditem1 = document.createElement("a");
+        var ts = this;
+        dditem1.addEventListener('click', function() { unredact(ts); });
+        dditem1.innerHTML = "Full precision";
+        ddcontent.appendChild(dditem1);
+      } else {
+        var ddcontent = this.nextElementSibling;
+      }
       // - set menu visible
       ddcontent.classList.toggle("show");
       // - set close listeners (click outside)
