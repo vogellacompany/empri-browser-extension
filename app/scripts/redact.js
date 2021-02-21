@@ -14,6 +14,14 @@ import { DateTime } from "luxon";
       console.log("Git-privacy deactivated");
       return;
     }
+    const Timeunit = {
+      Year: "year",
+      Month: "month",
+      Day: "day",
+      Hour: "hour",
+      Minute: "minute",
+      Second: "second"
+    };
     function createPopup(){
       console.log("Open popup");
       // - insert div around ts element if not already present
@@ -39,7 +47,7 @@ import { DateTime } from "luxon";
       // - set menu visible
       ddcontent.classList.toggle("show");
     }
-    function redact(el) {
+    function redact2globalpref(el) {
       browser.storage.sync
         .get([
           "ghrRedactMonth",
@@ -56,20 +64,21 @@ import { DateTime } from "luxon";
           // apply redaction
           let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
           if (res.ghrRedactMonth) {
-            dateTime = dateTime.set({ month: 1 });
+            dateTime = redact(dateTime, Timeunit.Year);
           }
           if (res.ghrRedactDay) {
-            dateTime = dateTime.set({ day: 1 });
+            dateTime = redact(dateTime, Timeunit.Month);
           }
           if (res.ghrRedactHours) {
-            dateTime = dateTime.set({ hour: 0 });
+            dateTime = redact(dateTime, Timeunit.Day);
           }
           if (res.ghrRedactMinutes) {
-            dateTime = dateTime.set({ minute: 0 });
+            dateTime = redact(dateTime, Timeunit.Day);
           }
           if (res.ghrRedactSeconds) {
-            dateTime = dateTime.set({ second: 0 });
+            dateTime = redact(dateTime, Timeunit.Minute);
           }
+          dateTime = redact(dateTime, Timeunit.Second);  // redacts actually nothing
           el.setAttribute("datetime", dateTime.toISO());
           el.setAttribute("redacted", true);
 
@@ -79,6 +88,25 @@ import { DateTime } from "luxon";
           el.addEventListener('click', createPopup);
         });
     }
+    function redact(dateTime, mostsigunit) {
+      // redact precision to the most significant unit
+      switch (mostsigunit) {  // fall through
+        case Timeunit.Year:
+          dateTime = dateTime.set({ month: 1 });
+        case Timeunit.Month:
+          dateTime = dateTime.set({ day: 1 });
+        case Timeunit.Day:
+          dateTime = dateTime.set({ hour: 0 });
+        case Timeunit.Hour:
+          dateTime = dateTime.set({ minute: 0 });
+        case Timeunit.Minute:
+          dateTime = dateTime.set({ second: 0 });
+        case Timeunit.Second:
+          // nothing to redact if seconds are wanted
+          break;
+      }
+      return dateTime;
+    }
     function unredact(el) {
       // reset to original datetime
       console.log("Unredact");
@@ -87,7 +115,7 @@ import { DateTime } from "luxon";
 
     function redactTimestamps() {
       document.querySelectorAll("time-ago, relative-time").forEach((el) => {
-        redact(el);
+        redact2globalpref(el);
       });
     }
 
@@ -108,21 +136,21 @@ import { DateTime } from "luxon";
           let text = el.textContent.substring(11);
           let dateTime = DateTime.fromFormat(text, "MMM d, y");
           if (res.ghrRedactMonth) {
-            dateTime = dateTime.set({ month: 1 });
+            dateTime = redact(dateTime, Timeunit.Year);
           }
           if (res.ghrRedactDay) {
-            dateTime = dateTime.set({ day: 1 });
+            dateTime = redact(dateTime, Timeunit.Month);
           }
           if (res.ghrRedactHours) {
-            dateTime = dateTime.set({ hour: 0 });
+            dateTime = redact(dateTime, Timeunit.Day);
           }
           if (res.ghrRedactMinutes) {
-            dateTime = dateTime.set({ minute: 0 });
+            dateTime = redact(dateTime, Timeunit.Day);
           }
           if (res.ghrRedactSeconds) {
-            dateTime = dateTime.set({ second: 0 });
+            dateTime = redact(dateTime, Timeunit.Minute);
           }
-
+          dateTime = redact(dateTime, Timeunit.Second);  // redacts actually nothing
           el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
           el.setAttribute("redacted", true);
         });
@@ -180,7 +208,7 @@ import { DateTime } from "luxon";
           (node.nodeName === "TIME-AGO" || node.nodeName === "RELATIVE-TIME") &&
           !node.getAttribute("redacted")
         ) {
-          redact(node);
+          redact2globalpref(node);
         }
       });
     });
