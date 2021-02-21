@@ -62,6 +62,11 @@ import { DateTime } from "luxon";
           "ghrRedactSeconds",
         ])
         .then((res) => {
+          // remember original datetime for selective controls
+          el.dataset.dtoriginally = el.getAttribute("datetime");
+          // remember used redaction setting
+          el.dataset.redactions = JSON.stringify(res);
+          // apply redaction
           let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
           if (res.ghrRedactMonth) {
             dateTime = dateTime.set({ month: 1 });
@@ -84,8 +89,13 @@ import { DateTime } from "luxon";
           // - make el the dropdown button
           el.classList.add("dropbtn");
           // - set popup trigger
-          el.addEventListener('click', createPopup, false);
+          el.addEventListener('click', createPopup);
         });
+    }
+    function unredact(el) {
+      // reset to original datetime
+      console.log("Unredact");
+      el.setAttribute("datetime", el.dataset.dtoriginally);
     }
 
     function redactTimestamps() {
@@ -166,7 +176,8 @@ import { DateTime } from "luxon";
     }
 
     redactTimelineTimestamps();
-    document.addEventListener("pjax:end", function () {
+    document.addEventListener("pjax:end", function () {  // hook for partial refreshes
+      connsole.log("Refresh hook");
       // content change without full page load
       redactTimelineTimestamps();
       redactTimestamps();
