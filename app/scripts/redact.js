@@ -14,6 +14,38 @@ import { DateTime } from "luxon";
       console.log("Git-privacy deactivated");
       return;
     }
+    function createPopup(){
+      console.log("Open popup");
+      // - insert div around ts element
+      // TODO-CB Maybe remove divs after menu closing to tidy up DOM?
+      // https://stackoverflow.com/a/11601108
+      var ddwrapper = document.createElement("div");
+      ddwrapper.classList.add("dropdown");
+      var parent = this.parentNode;
+      parent.insertBefore(ddwrapper, this);
+      ddwrapper.appendChild(this);
+      var ddcontent = document.createElement("div");
+      ddcontent.classList.add("dropdown-content");
+      ddwrapper.appendChild(ddcontent);
+      var dditem1 = document.createElement("a");
+      dditem1.innerHTML = "Dummy";
+      ddcontent.appendChild(dditem1);
+      // - set menu visible
+      ddcontent.classList.toggle("show");
+      // - set close listeners (click outside)
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+          var dropdowns = document.getElementsByClassName("dropdown-content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
+    }
     function redact(el) {
       browser.storage.sync
         .get([
@@ -42,6 +74,11 @@ import { DateTime } from "luxon";
           }
           el.setAttribute("datetime", dateTime.toISO());
           el.setAttribute("redacted", true);
+
+          // - make el the dropdown button
+          el.classList.add("dropbtn");
+          // - set popup trigger
+          el.addEventListener('click', createPopup, false);
         });
     }
 
