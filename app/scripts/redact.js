@@ -38,19 +38,6 @@ import { DateTime } from "luxon";
       }
       // - set menu visible
       ddcontent.classList.toggle("show");
-      // - set close listeners (click outside)
-      window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn')) {
-          var dropdowns = document.getElementsByClassName("dropdown-content");
-          var i;
-          for (i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-              openDropdown.classList.remove('show');
-            }
-          }
-        }
-      }
     }
     function redact(el) {
       browser.storage.sync
@@ -204,5 +191,16 @@ import { DateTime } from "luxon";
       attributes: false,
       characterData: false,
     });
+
+    // - set popup close listeners (click outside)
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        document.querySelectorAll(".dropdown-content").forEach((dd) => {
+          if (dd.classList.contains('show')) {
+            dd.classList.remove('show');
+          }
+        });
+      }
+    }
   });
 })();
