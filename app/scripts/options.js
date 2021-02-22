@@ -1,21 +1,12 @@
 import { DateTime } from "luxon";
 
 (() => {
-  let fieldset = document.querySelector(".redaction-pattern");
-  let month = fieldset.querySelector("#month");
-  let day = fieldset.querySelector("#day");
-  let hour = fieldset.querySelector("#hour");
-  let minute = fieldset.querySelector("#minute");
-  let second = fieldset.querySelector("#second");
-  let exampleField = document.querySelector(".example > input");
+  let msu = document.querySelector("#mostsigunit");
+  let exampleField = document.querySelector("#example");
 
   function saveOptions(e) {
     browser.storage.sync.set({
-      ghrRedactMonth: month.checked,
-      ghrRedactDay: day.checked,
-      ghrRedactHours: hour.checked,
-      ghrRedactMinutes: minute.checked,
-      ghrRedactSeconds: second.checked,
+      mostsigunit: msu.value,
     });
     e.preventDefault();
   }
@@ -23,38 +14,32 @@ import { DateTime } from "luxon";
   function restoreOptions() {
     browser.storage.sync
       .get([
-        "ghrRedactMonth",
-        "ghrRedactDay",
-        "ghrRedactHours",
-        "ghrRedactMinutes",
-        "ghrRedactSeconds",
+        "mostsigunit",
       ])
       .then((res) => {
-        month.checked = res.ghrRedactMonth;
-        day.checked = res.ghrRedactDay;
-        hour.checked = res.ghrRedactHours;
-        minute.checked = res.ghrRedactMinutes;
-        second.checked = res.ghrRedactSeconds;
+        if (res.mostsigunit) {
+          msu.value = res.mostsigunit;
+        }
       })
       .then(() => updateExampleField());
   }
 
   function updateExampleField() {
     let dateTime = DateTime.fromISO("2020-09-02T23:23:23");
-    if (month.checked) {
-      dateTime = dateTime.set({ month: 1 });
-    }
-    if (day.checked) {
-      dateTime = dateTime.set({ day: 1 });
-    }
-    if (hour.checked) {
-      dateTime = dateTime.set({ hour: 0 });
-    }
-    if (minute.checked) {
-      dateTime = dateTime.set({ minute: 0 });
-    }
-    if (second.checked) {
-      dateTime = dateTime.set({ second: 0 });
+    switch (msu.value) {  // fall through
+      case "year":
+        dateTime = dateTime.set({ month: 1 });
+      case "month":
+        dateTime = dateTime.set({ day: 1 });
+      case "day":
+        dateTime = dateTime.set({ hour: 0 });
+      case "hour":
+        dateTime = dateTime.set({ minute: 0 });
+      case "minute":
+        dateTime = dateTime.set({ second: 0 });
+      case "second":
+        // nothing to redact if seconds are wanted
+        break;
     }
     let v = dateTime.toFormat("yyyy-MM-dd'T'hh:mm:ss");
     console.log(v);
@@ -63,7 +48,5 @@ import { DateTime } from "luxon";
 
   document.addEventListener("DOMContentLoaded", restoreOptions);
   document.querySelector("form").addEventListener("submit", saveOptions);
-  document.querySelectorAll("input[type=checkbox]").forEach((ele) => {
-    ele.addEventListener("click", updateExampleField);
-  });
+  document.querySelector("#mostsigunit").addEventListener("change", updateExampleField);
 })();

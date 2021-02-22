@@ -113,29 +113,14 @@ function getTimestampType(el) {
     function redact2globalpref(el) {
       browser.storage.sync
         .get([
-          "ghrRedactMonth",
-          "ghrRedactDay",
-          "ghrRedactHours",
-          "ghrRedactMinutes",
-          "ghrRedactSeconds",
+          "mostsigunit",
         ])
         .then((res) => {
           // remember original datetime for selective controls
           el.dataset.dtoriginally = el.getAttribute("datetime");
           // apply redaction
           let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
-          var msu = Timeunit.Second;  // redacts actually nothing
-          if (res.ghrRedactMonth) {
-            msu = Timeunit.Year;
-          } else if (res.ghrRedactDay) {
-            msu = Timeunit.Month;
-          } else if (res.ghrRedactHours) {
-            msu = Timeunit.Day;
-          } else if (res.ghrRedactMinutes) {
-            msu = Timeunit.Hour;
-          } else if (res.ghrRedactSeconds) {
-            msu = Timeunit.Minute;
-          }
+          let msu = res.mostsigunit;
           dateTime = redact(el, dateTime, msu);
           el.setAttribute("datetime", dateTime.toISO());
 
@@ -191,29 +176,14 @@ function getTimestampType(el) {
     function redactTimelineItem(el) {
       return browser.storage.sync
         .get([
-          "ghrRedactMonth",
-          "ghrRedactDay",
-          "ghrRedactHours",
-          "ghrRedactMinutes",
-          "ghrRedactSeconds",
+          "mostsigunit",
         ])
         .then((res) => {
           // "Commits on Jul 12, 2020".substring(11) -> "Jul 12, 2020"
           let text = el.textContent.substring(11);
           let dateTime = DateTime.fromFormat(text, "MMM d, y");
           el.dataset.dtoriginally = dateTime;
-          var msu = Timeunit.Second;  // redacts actually nothing
-          if (res.ghrRedactMonth) {
-            msu = Timeunit.Year;
-          } else if (res.ghrRedactDay) {
-            msu = Timeunit.Month;
-          } else if (res.ghrRedactHours) {
-            msu = Timeunit.Day;
-          } else if (res.ghrRedactMinutes) {
-            msu = Timeunit.Hour;
-          } else if (res.ghrRedactSeconds) {
-            msu = Timeunit.Minute;
-          }
+          var msu = res.mostsigunit;
           dateTime = redact(el, dateTime, msu);
           el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
         });
