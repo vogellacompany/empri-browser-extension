@@ -3,10 +3,12 @@ import { DateTime } from "luxon";
 (() => {
   let msu = document.querySelector("#mostsigunit");
   let exampleField = document.querySelector("#example");
+  let studyOptIn = document.querySelector("#study-optin");
 
   function saveOptions(e) {
     browser.storage.sync.set({
       mostsigunit: msu.value,
+      studyOptIn: studyOptIn.checked,
     });
     e.preventDefault();
   }
@@ -15,11 +17,13 @@ import { DateTime } from "luxon";
     browser.storage.sync
       .get([
         "mostsigunit",
+        "studyOptIn",
       ])
       .then((res) => {
         if (res.mostsigunit) {
           msu.value = res.mostsigunit;
         }
+        studyOptIn.checked = res.studyOptIn;
       })
       .then(() => updateExampleField());
   }
