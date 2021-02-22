@@ -107,7 +107,6 @@ import { DateTime } from "luxon";
           }
           dateTime = redact(el, dateTime, msu);
           el.setAttribute("datetime", dateTime.toISO());
-          el.setAttribute("redacted", true);
 
           // - make el the dropdown button
           el.classList.add("dropbtn");
@@ -182,7 +181,6 @@ import { DateTime } from "luxon";
           }
           dateTime = redact(el, dateTime, msu);
           el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
-          el.setAttribute("redacted", true);
         });
     }
 
@@ -236,7 +234,7 @@ import { DateTime } from "luxon";
         let node = mutation.target;
         if (
           (node.nodeName === "TIME-AGO" || node.nodeName === "RELATIVE-TIME") &&
-          !node.getAttribute("redacted")
+          !node.dataset.redacted
         ) {
           redact2globalpref(node);
         }
