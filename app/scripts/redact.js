@@ -1,5 +1,30 @@
 import { DateTime } from "luxon";
 
+
+// from https://stackoverflow.com/a/2631931
+function getPathTo(element) {
+  if (element.id!=='')
+    return 'id("'+element.id+'")';
+  if (element===document.body)
+    return element.tagName;
+
+  var ix= 0;
+  var siblings= element.parentNode.childNodes;
+  for (var i= 0; i<siblings.length; i++) {
+    var sibling= siblings[i];
+    if (sibling===element)
+      return getPathTo(element.parentNode)+'/'+element.tagName+'['+(ix+1)+']';
+    if (sibling.nodeType===1 && sibling.tagName===element.tagName)
+      ix++;
+  }
+}
+
+
+function getTimestampType(el) {
+  return getPathTo(el);
+}
+
+
 (() => {
   if (window.ghRedactHasRun) {
     return;
@@ -135,7 +160,8 @@ import { DateTime } from "luxon";
     }
     function unredact(el, mostsigunit = Timeunit.Second) {
       // unredact to the msu of the original datetime
-      console.log("Unredact");
+      let tsType = getTimestampType(el);
+      console.log(`Unredact ${tsType} to ${mostsigunit}`);
       let dateTime = redact(
         el,
         DateTime.fromISO(el.dataset.dtoriginally),
