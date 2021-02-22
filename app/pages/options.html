@@ -9,35 +9,19 @@
   <body>
     <div class="content">
       <form>
-        <fieldset class="redaction-pattern">
-          <legend>Redaction Pattern</legend>
-          <div>
-            <input type="checkbox" id="month" name="month" value="month">
-            <label for="month">Month</label>
-          </div>
-          <div>
-            <input type="checkbox" id="day" name="day" value="day">
-            <label for="day">Day</label>
-          </div>
-          <div>
-            <input type="checkbox" id="hour" name="hour" value="hour">
-            <label for="hour">Hour</label>
-          </div>
-          <div>
-            <input type="checkbox" id="minute" name="minute" value="minute">
-            <label for="minute">Minute</label>
-          </div>
-          <div>
-            <input type="checkbox" id="second" name="second" value="second">
-            <label for="second">Second</label>
-          </div>
-          <button class="browser-style" type="submit">Save</button>
-        </fieldset>
+        <label for="mostsigunit">Select default timestamp precision:</label>
+        <select name="mostsigunit" id="mostsigunit">
+          <option value="year" selected>Year</option>
+          <option value="month">Month</option>
+          <option value="day">Day</option>
+          <option value="hour">Hour</option>
+          <option value="minute">Minute</option>
+          <option value="second">Second</option>
+        </select>
+        <label for="example">Example</label>
+        <input name="example" id="example" type="datetime-local" readonly>
+        <input type="submit" value="Save">
       </form>
-      <fieldset class="example">
-        <legend>Example</legend>
-        <input type="datetime-local" readonly>
-      </fieldset>
     </div>
     <!-- TODO(FAP): show unsaved changes (dirty state) and give feedback on save action? -->
     <script src="../scripts/options.js"></script>
