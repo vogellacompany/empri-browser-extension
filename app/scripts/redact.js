@@ -36,11 +36,41 @@ import { DateTime } from "luxon";
         var ddcontent = document.createElement("div");
         ddcontent.classList.add("dropdown-content");
         ddwrapper.appendChild(ddcontent);
-        var dditem1 = document.createElement("a");
         var ts = this;
-        dditem1.addEventListener('click', function() { unredact(ts); });
-        dditem1.innerHTML = "Full precision";
-        ddcontent.appendChild(dditem1);
+        // Info Text
+        var info = document.createElement("p");
+        info.innerHTML = "Select date precision";
+        ddcontent.appendChild(info);
+        // Year
+        var ddYear = document.createElement("a");
+        ddYear.addEventListener('click', function() { unredact(ts, Timeunit.Year); });
+        ddYear.innerHTML = "YYYY";
+        ddcontent.appendChild(ddYear);
+        // Month
+        var ddMonth = document.createElement("a");
+        ddMonth.addEventListener('click', function() { unredact(ts, Timeunit.Month); });
+        ddMonth.innerHTML = "mm";
+        ddcontent.appendChild(ddMonth);
+        // Day
+        var ddDay = document.createElement("a");
+        ddDay.addEventListener('click', function() { unredact(ts, Timeunit.Day); });
+        ddDay.innerHTML = "dd";
+        ddcontent.appendChild(ddDay);
+        // Hour
+        var ddHour = document.createElement("a");
+        ddHour.addEventListener('click', function() { unredact(ts, Timeunit.Hour); });
+        ddHour.innerHTML = "HH";
+        ddcontent.appendChild(ddHour);
+        // Minute
+        var ddMinute = document.createElement("a");
+        ddMinute.addEventListener('click', function() { unredact(ts, Timeunit.Minute); });
+        ddMinute.innerHTML = "MM";
+        ddcontent.appendChild(ddMinute);
+        // Second
+        var ddSecond = document.createElement("a");
+        ddSecond.addEventListener('click', function() { unredact(ts, Timeunit.Second); });
+        ddSecond.innerHTML = "SS";
+        ddcontent.appendChild(ddSecond);
       } else {
         var ddcontent = this.nextElementSibling;
       }
@@ -107,10 +137,14 @@ import { DateTime } from "luxon";
       }
       return dateTime;
     }
-    function unredact(el) {
-      // reset to original datetime
+    function unredact(el, mostsigunit = Timeunit.Second) {
+      // unredact to the msu of the original datetime
       console.log("Unredact");
-      el.setAttribute("datetime", el.dataset.dtoriginally);
+      let dateTime = redact(
+        DateTime.fromISO(el.dataset.dtoriginally),
+        mostsigunit
+      )
+      el.setAttribute("datetime", dateTime.toISO());
     }
 
     function redactTimestamps() {
