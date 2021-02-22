@@ -93,22 +93,19 @@ import { DateTime } from "luxon";
           el.dataset.redactions = JSON.stringify(res);
           // apply redaction
           let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
+          var msu = Timeunit.Second;  // redacts actually nothing
           if (res.ghrRedactMonth) {
-            dateTime = redact(dateTime, Timeunit.Year);
+            msu = Timeunit.Year;
+          } else if (res.ghrRedactDay) {
+            msu = Timeunit.Month;
+          } else if (res.ghrRedactHours) {
+            msu = Timeunit.Day;
+          } else if (res.ghrRedactMinutes) {
+            msu = Timeunit.Hour;
+          } else if (res.ghrRedactSeconds) {
+            msu = Timeunit.Minute;
           }
-          if (res.ghrRedactDay) {
-            dateTime = redact(dateTime, Timeunit.Month);
-          }
-          if (res.ghrRedactHours) {
-            dateTime = redact(dateTime, Timeunit.Day);
-          }
-          if (res.ghrRedactMinutes) {
-            dateTime = redact(dateTime, Timeunit.Day);
-          }
-          if (res.ghrRedactSeconds) {
-            dateTime = redact(dateTime, Timeunit.Minute);
-          }
-          dateTime = redact(dateTime, Timeunit.Second);  // redacts actually nothing
+          dateTime = redact(el, dateTime, msu);
           el.setAttribute("datetime", dateTime.toISO());
           el.setAttribute("redacted", true);
 
@@ -118,7 +115,7 @@ import { DateTime } from "luxon";
           el.addEventListener('click', createPopup);
         });
     }
-    function redact(dateTime, mostsigunit) {
+    function redact(el, dateTime, mostsigunit) {
       // redact precision to the most significant unit
       switch (mostsigunit) {  // fall through
         case Timeunit.Year:
@@ -135,12 +132,14 @@ import { DateTime } from "luxon";
           // nothing to redact if seconds are wanted
           break;
       }
+      el.dataset.redacted = true;
       return dateTime;
     }
     function unredact(el, mostsigunit = Timeunit.Second) {
       // unredact to the msu of the original datetime
       console.log("Unredact");
       let dateTime = redact(
+        el,
         DateTime.fromISO(el.dataset.dtoriginally),
         mostsigunit
       )
@@ -169,22 +168,19 @@ import { DateTime } from "luxon";
           // "Commits on Jul 12, 2020".substring(11) -> "Jul 12, 2020"
           let text = el.textContent.substring(11);
           let dateTime = DateTime.fromFormat(text, "MMM d, y");
+          var msu = Timeunit.Second;  // redacts actually nothing
           if (res.ghrRedactMonth) {
-            dateTime = redact(dateTime, Timeunit.Year);
+            msu = Timeunit.Year;
+          } else if (res.ghrRedactDay) {
+            msu = Timeunit.Month;
+          } else if (res.ghrRedactHours) {
+            msu = Timeunit.Day;
+          } else if (res.ghrRedactMinutes) {
+            msu = Timeunit.Hour;
+          } else if (res.ghrRedactSeconds) {
+            msu = Timeunit.Minute;
           }
-          if (res.ghrRedactDay) {
-            dateTime = redact(dateTime, Timeunit.Month);
-          }
-          if (res.ghrRedactHours) {
-            dateTime = redact(dateTime, Timeunit.Day);
-          }
-          if (res.ghrRedactMinutes) {
-            dateTime = redact(dateTime, Timeunit.Day);
-          }
-          if (res.ghrRedactSeconds) {
-            dateTime = redact(dateTime, Timeunit.Minute);
-          }
-          dateTime = redact(dateTime, Timeunit.Second);  // redacts actually nothing
+          dateTime = redact(el, dateTime, msu);
           el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
           el.setAttribute("redacted", true);
         });
