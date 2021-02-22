@@ -102,6 +102,17 @@ function getTimestampType(el) {
       // - set menu visible
       ddcontent.classList.toggle("show");
     }
+    function removePopup(el){
+      // remove dropdown elements from DOM
+      var parent = el.parentNode;
+      if (!parent.classList.contains("dropdown")) {
+        return;  // no popup to remove
+      }
+      var ddwrapper = parent;
+      var origParent = ddwrapper.parentNode;
+      origParent.insertBefore(el, ddwrapper);
+      origParent.removeChild(ddwrapper);
+    }
     function redact2globalpref(el) {
       browser.storage.sync
         .get([
@@ -159,6 +170,7 @@ function getTimestampType(el) {
       return dateTime;
     }
     function unredact(el, mostsigunit = Timeunit.Second) {
+      removePopup(el);  // make sure DOM is clean for path calc
       // unredact to the msu of the original datetime
       let tsType = getTimestampType(el);
       console.log(`Unredact ${tsType} to ${mostsigunit}`);
@@ -279,6 +291,9 @@ function getTimestampType(el) {
       if (!event.target.matches('.dropbtn')) {
         document.querySelectorAll(".dropdown-content.show").forEach((dd) => {
           dd.classList.remove('show');
+        });
+        document.querySelectorAll(".dropdown > .dropbtn").forEach((dbtn) => {
+          removePopup(dbtn);  // remove remaining dropdowns from DOM
         });
       }
     }
