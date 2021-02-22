@@ -41,7 +41,7 @@ import { DateTime } from "luxon";
         // nothing to redact if seconds are wanted
         break;
     }
-    let v = dateTime.toFormat("yyyy-MM-dd'T'hh:mm:ss");
+    let v = dateTime.toFormat("yyyy-MM-dd'T'HH:mm:ss");
     console.log(v);
     exampleField.value = v;
   }
