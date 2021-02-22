@@ -48,10 +48,7 @@ function getTimestampType(el) {
       Second: "second"
     };
     function createPopup(){
-      console.log("Open popup");
       // - insert div around ts element if not already present
-      // TODO-CB Maybe remove divs after menu closing to tidy up DOM?
-      // https://stackoverflow.com/a/11601108
       var parent = this.parentNode;
       if (!parent.classList.contains("dropdown")) {
         var ddwrapper = document.createElement("div");
