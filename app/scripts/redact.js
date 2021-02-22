@@ -257,10 +257,8 @@ import { DateTime } from "luxon";
     // - set popup close listeners (click outside)
     window.onclick = function(event) {
       if (!event.target.matches('.dropbtn')) {
-        document.querySelectorAll(".dropdown-content").forEach((dd) => {
-          if (dd.classList.contains('show')) {
-            dd.classList.remove('show');
-          }
+        document.querySelectorAll(".dropdown-content.show").forEach((dd) => {
+          dd.classList.remove('show');
         });
       }
     }
