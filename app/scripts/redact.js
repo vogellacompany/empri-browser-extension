@@ -89,8 +89,6 @@ import { DateTime } from "luxon";
         .then((res) => {
           // remember original datetime for selective controls
           el.dataset.dtoriginally = el.getAttribute("datetime");
-          // remember used redaction setting
-          el.dataset.redactions = JSON.stringify(res);
           // apply redaction
           let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
           var msu = Timeunit.Second;  // redacts actually nothing
@@ -131,7 +129,8 @@ import { DateTime } from "luxon";
           // nothing to redact if seconds are wanted
           break;
       }
-      el.dataset.redacted = true;
+      el.dataset.redacted = true;  // flag to avoid repeated redactions
+      el.dataset.mostsigunit = mostsigunit;  // remember redaction level
       return dateTime;
     }
     function unredact(el, mostsigunit = Timeunit.Second) {
@@ -167,6 +166,7 @@ import { DateTime } from "luxon";
           // "Commits on Jul 12, 2020".substring(11) -> "Jul 12, 2020"
           let text = el.textContent.substring(11);
           let dateTime = DateTime.fromFormat(text, "MMM d, y");
+          el.dataset.dtoriginally = dateTime;
           var msu = Timeunit.Second;  // redacts actually nothing
           if (res.ghrRedactMonth) {
             msu = Timeunit.Year;
