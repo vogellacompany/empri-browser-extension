@@ -258,7 +258,7 @@ function getTimestampType(el) {
 
     redactTimelineTimestamps();
     document.addEventListener("pjax:end", function () {  // hook for partial refreshes
-      connsole.log("Refresh hook");
+      console.log("Refresh hook");
       // content change without full page load
       redactTimelineTimestamps();
       redactTimestamps();
