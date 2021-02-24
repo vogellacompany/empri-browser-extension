@@ -8,8 +8,13 @@
 
 <body>
   <div id="popup-content">
-    <div class="button on-off" role="button"></div>
-    <div class="button settings-button" role="button">Settings</div>
+    <form>
+      <label class="switch">
+        <input id="ghonoff" name="ghonoff" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+      <button id="settings">Settings</button>
+    </form>
   </div>
   <script src="../scripts/popup.js"></script>
 </body>
