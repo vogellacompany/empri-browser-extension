@@ -1,15 +1,7 @@
 function setButtonState() {
   browser.storage.sync.get("ghrOn").then((res) => {
-    let onOffButton = document.querySelector(".on-off");
-    if (res.ghrOn) {
-      onOffButton.classList.remove("off");
-      onOffButton.classList.add("on");
-      onOffButton.textContent = "On";
-    } else {
-      onOffButton.classList.remove("on");
-      onOffButton.classList.add("off");
-      onOffButton.textContent = "Off";
-    }
+    let onOffButton = document.querySelector("#ghonoff");
+    onOffButton.checked = res.ghrOn;
   });
 }
 setButtonState();
@@ -54,6 +46,6 @@ function openSettings() {
 }
 
 document
-  .querySelector(".settings-button")
+  .querySelector("#settings")
   .addEventListener("click", openSettings);
-document.querySelector(".on-off").addEventListener("click", toggleOnOff);
+document.querySelector("#ghonoff").addEventListener("click", toggleOnOff);
