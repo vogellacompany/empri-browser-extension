@@ -1,6 +1,9 @@
 import { DateTime } from "luxon";
 
 
+const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
+
+
 // from https://stackoverflow.com/a/2631931
 function getPathTo(element) {
   if (element.id!=='')
@@ -59,45 +62,90 @@ function getTimestampType(el) {
         ddcontent.classList.add("dropdown-content");
         ddwrapper.appendChild(ddcontent);
         var ts = this;
+        // Date preview <input id="dateprev" type="datetime-local" readonly>
+        var dateprev = document.createElement("span");
+        dateprev.id = "dateprev";
+        let dateTime = DateTime.fromISO(ts.getAttribute("datetime"));
+        dateprev.innerHTML = dateTime.toFormat(dateprevFormat);
+        dateprev.classList.add("datebox");
+        ddcontent.appendChild(dateprev);
+        // Enhance button – increase msu by one
+        var enhancebtn = document.createElement("button");
+        enhancebtn.id = "enhance";
+        enhancebtn.innerHTML = "+";
+        enhancebtn.addEventListener('click', function() { increaseMsu(ts); });
+        ddcontent.appendChild(enhancebtn);
+        // Ok/close button – dummy button to close the popup
+        var okbtn = document.createElement("button");
+        okbtn.innerHTML = "✓";
+        ddcontent.appendChild(okbtn);
         // Info Text
         var info = document.createElement("p");
         info.innerHTML = "Select date precision";
         ddcontent.appendChild(info);
         // Year
         var ddYear = document.createElement("a");
+        ddYear.id = "year";
         ddYear.addEventListener('click', function() { unredact(ts, Timeunit.Year); });
-        ddYear.innerHTML = "YYYY";
+        ddYear.innerHTML = "yyyy";
         ddcontent.appendChild(ddYear);
         // Month
         var ddMonth = document.createElement("a");
+        ddMonth.id = "month";
         ddMonth.addEventListener('click', function() { unredact(ts, Timeunit.Month); });
         ddMonth.innerHTML = "mm";
         ddcontent.appendChild(ddMonth);
         // Day
         var ddDay = document.createElement("a");
+        ddDay.id = "day";
         ddDay.addEventListener('click', function() { unredact(ts, Timeunit.Day); });
         ddDay.innerHTML = "dd";
         ddcontent.appendChild(ddDay);
         // Hour
         var ddHour = document.createElement("a");
+        ddHour.id = "hour";
         ddHour.addEventListener('click', function() { unredact(ts, Timeunit.Hour); });
         ddHour.innerHTML = "HH";
         ddcontent.appendChild(ddHour);
         // Minute
         var ddMinute = document.createElement("a");
+        ddMinute.id = "minute";
         ddMinute.addEventListener('click', function() { unredact(ts, Timeunit.Minute); });
         ddMinute.innerHTML = "MM";
         ddcontent.appendChild(ddMinute);
         // Second
         var ddSecond = document.createElement("a");
+        ddSecond.id = "second";
         ddSecond.addEventListener('click', function() { unredact(ts, Timeunit.Second); });
         ddSecond.innerHTML = "SS";
         ddcontent.appendChild(ddSecond);
       } else {
         var ddcontent = this.nextElementSibling;
       }
+      // - set active msu
+      setActiveMsu(ts);
       // - set menu visible
       ddcontent.classList.toggle("show");
+    }
+    function setActiveMsu(el) {
+      let msu = el.dataset.mostsigunit;
+      document.getElementById(msu).classList.add("active");
+    }
+    function increaseMsu(el) {
+      let msu = el.dataset.mostsigunit;
+      if (msu == "second") return;  // cannot increase any further
+      let nextMsuEl = document.getElementById(msu).nextSibling;
+      let nextMsu = nextMsuEl.id;
+      // clear all active marks
+      document.querySelectorAll("a.active").forEach((a) => {
+        a.classList.remove("active");
+      });
+      // set new active msu
+      unredact(el, nextMsu);
+      // update dateprev
+      let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
+      document.querySelector("#dateprev").innerHTML = dateTime.toFormat(dateprevFormat);
+      setActiveMsu(el);
     }
     function removePopup(el){
       // remove dropdown elements from DOM
@@ -152,16 +200,20 @@ function getTimestampType(el) {
       return dateTime;
     }
     function unredact(el, mostsigunit = Timeunit.Second) {
-      removePopup(el);  // make sure DOM is clean for path calc
-      // unredact to the msu of the original datetime
-      let tsType = getTimestampType(el);
-      console.log(`Unredact ${tsType} to ${mostsigunit}`);
       let dateTime = redact(
         el,
         DateTime.fromISO(el.dataset.dtoriginally),
         mostsigunit
       )
       el.setAttribute("datetime", dateTime.toISO());
+    }
+    function logChoice(el) {
+      // log the unredaction choice of the user
+      //removePopup(el);  // make sure DOM is clean for path calc
+      // unredact to the msu of the original datetime
+      let tsType = getTimestampType(el);
+      let msu = el.dataset.mostsigunit;
+      console.log(`Unredact ${tsType} to ${msu}`);
     }
 
     function redactTimestamps() {
@@ -255,12 +307,13 @@ function getTimestampType(el) {
 
     // - set popup close listeners (click outside)
     window.onclick = function(event) {
-      if (!event.target.matches('.dropbtn')) {
+      if (!event.target.matches('.dropbtn, #enhance')) {
         document.querySelectorAll(".dropdown-content.show").forEach((dd) => {
           dd.classList.remove('show');
         });
         document.querySelectorAll(".dropdown > .dropbtn").forEach((dbtn) => {
           removePopup(dbtn);  // remove remaining dropdowns from DOM
+          logChoice(dbtn);  // log the redaction choice
         });
       }
     }
