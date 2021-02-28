@@ -36,13 +36,34 @@
   font-size: 140%;
 }
 
-.dropdown a:hover {
-  background-color: #eee;
+.dropdown-content a:hover {
+  background-color: #ddd;
   text-decoration: none;
-  font-weight: bold;
   border-bottom: 2px solid black;
 }
+
+.dropdown-content a.active {
+  border-bottom: 2px solid black;
+}
+
+.dropdown-content > .datebox, button {
+  display: block-inline;
+  border: none;
+  font-size: 120%;
+}
+.dropdown-content > .datebox {
+  margin: 0 5px;
+  font-family: monospace, monospace;
+}
+.dropdown-content #enhance {
+  background-color: #28ADCA;
+  color: white;
+  text-weight: bold;
+}
+
 
 .show {
   display: block;
 }
+
+
