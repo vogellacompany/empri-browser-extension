@@ -52,5 +52,6 @@ import { DateTime } from "luxon";
 
   document.addEventListener("DOMContentLoaded", restoreOptions);
   document.querySelector("form").addEventListener("submit", saveOptions);
+  document.querySelector("form").addEventListener("submit", function() {window.close();});
   document.querySelector("#mostsigunit").addEventListener("change", updateExampleField);
 })();
