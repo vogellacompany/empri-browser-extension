@@ -214,6 +214,43 @@ function getTimestampType(el) {
       let tsType = getTimestampType(el);
       let msu = el.dataset.mostsigunit;
       console.log(`Unredact ${tsType} to ${msu}`);
+      browser.storage.sync
+        .get("studyOptIn")
+        .then((res) => {
+          if (res.studyOptIn) {
+            updateStudyData(tsType, msu);
+          }
+        })
+    }
+    function updateStudyData(tsType, msu) {
+      // increment counter in local storage area
+      browser.storage.local
+        .get("msuChoices")  // {TSTYPE: {MSU: Counter, ...}, ...}
+        .then((res) => {
+          var msuChoices = res.msuChoices;
+          if (msuChoices === undefined) {
+            msuChoices = new Map();
+          } else {
+            msuChoices = JSON.parse(msuChoices, mapreviver);
+          }
+
+          var tsStats = msuChoices.get(tsType);
+          if (tsStats === undefined) {
+            tsStats = new Map();
+          }
+          var tsMsuCount = tsStats.get(msu);
+          if (tsMsuCount === undefined) {
+            tsMsuCount = 0;
+          }
+          tsMsuCount++;
+          tsStats.set(msu, tsMsuCount);
+          msuChoices.set(tsType, tsStats);
+          let stringified = JSON.stringify(msuChoices, mapreplacer);
+          console.log(`LS: msuChoices ${stringified}`);
+
+          // store updated stats
+          browser.storage.local.set({msuChoices: stringified});
+        })
     }
 
     function redactTimestamps() {
@@ -319,3 +356,25 @@ function getTimestampType(el) {
     }
   });
 })();
+
+
+// Map to Array converter for stringification
+// https://stackoverflow.com/a/56150320
+function mapreplacer(key, value) {
+  if(value instanceof Map) {
+    return {
+      dataType: 'Map',
+      value: Array.from(value.entries()), // or with spread: value: [...value]
+    };
+  } else {
+    return value;
+  }
+}
+function mapreviver(key, value) {
+  if(typeof value === 'object' && value !== null) {
+    if (value.dataType === 'Map') {
+      return new Map(value.value);
+    }
+  }
+  return value;
+}
