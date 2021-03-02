@@ -4,19 +4,13 @@ import { DateTime } from "luxon";
 const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
 
 
-// from https://stackoverflow.com/a/2631931
+// build simple xpath to element
 function getPathTo(element) {
-  if (element.id!=='')
-    return 'id("'+element.id+'")';
-  if (element===document.body)
-    return element.tagName;
-
-  var siblings= element.parentNode.childNodes;
-  for (var i= 0; i<siblings.length; i++) {
-    var sibling= siblings[i];
-    if (sibling===element)
-      return getPathTo(element.parentNode)+'/'+element.tagName;
+  // recursively build path from element up to the root
+  if (element === document.body) {
+    return element.tagName;  // end recursion at root
   }
+  return getPathTo(element.parentNode) + '/' + element.tagName;
 }
 
 
