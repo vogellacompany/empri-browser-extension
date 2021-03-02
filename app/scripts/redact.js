@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { mapreplacer, mapreviver } from "./utils.js";
 
 
 const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
@@ -348,24 +349,3 @@ function getTimestampType(el) {
   });
 })();
 
-
-// Map to Array converter for stringification
-// https://stackoverflow.com/a/56150320
-function mapreplacer(key, value) {
-  if(value instanceof Map) {
-    return {
-      dataType: 'Map',
-      value: Array.from(value.entries()), // or with spread: value: [...value]
-    };
-  } else {
-    return value;
-  }
-}
-function mapreviver(key, value) {
-  if(typeof value === 'object' && value !== null) {
-    if (value.dataType === 'Map') {
-      return new Map(value.value);
-    }
-  }
-  return value;
-}
