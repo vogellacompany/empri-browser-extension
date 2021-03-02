@@ -18,7 +18,6 @@ function toggleOnOff(e) {
     },
   };
 
-  let button = e.currentTarget;
   browser.storage.sync.get("ghrOn").then((res) => {
     let newState = !res.ghrOn;
     browser.storage.sync
