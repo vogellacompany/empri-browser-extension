@@ -8,7 +8,16 @@
 
   <body>
     <div class="content">
-      <table style="width:100%">
+      <table id="participant-data">
+        <caption>General participant data</caption>
+        <tbody>
+          <tr>
+            <td>Participant ID</td>
+            <td id="participantId">not set</td>
+          </tr>
+        </tbody>
+      </table>
+      <table id="msu-choices">
         <caption>Selected most significant units (MSU)</caption>
         <thead>
           <tr>
@@ -24,7 +33,7 @@
         </tbody>
       </table>
       <form>
-        <button id="studypurge">Clear Study Data</button>
+        <button id="studypurge">Reset Study Data</button>
       </form>
     </div>
     <script src="../scripts/studydataview.js"></script>

@@ -10,6 +10,7 @@
     "webextension-toolbox": "latest"
   },
   "dependencies": {
-    "luxon": "^1.25.0"
+    "luxon": "^1.25.0",
+    "uuid": "^8.3.2"
   }
 }

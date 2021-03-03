@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { resetStudyData } from "./study.js";
 
 (() => {
   let msu = document.querySelector("#mostsigunit");
@@ -50,13 +51,9 @@ import { DateTime } from "luxon";
     exampleField.value = v;
   }
 
-  function clearStudyData() {
-    browser.storage.local.remove("msuChoices");
-  }
-
   document.addEventListener("DOMContentLoaded", restoreOptions);
   document.querySelector("form").addEventListener("submit", saveOptions);
   document.querySelector("form").addEventListener("submit", function() {window.close();});
   document.querySelector("#mostsigunit").addEventListener("change", updateExampleField);
-  document.querySelector("#study-optin").addEventListener("change", clearStudyData);
+  document.querySelector("#study-optin").addEventListener("change", resetStudyData);
 })();

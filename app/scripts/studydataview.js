@@ -1,8 +1,10 @@
 import { mapreplacer, mapreviver } from "./utils.js";
+import { resetStudyData } from "./study.js";
 
 (() => {
   let placeholder = document.querySelector("#placeholder");
   let msuTable = placeholder.parentElement;
+  let partIdCell = document.querySelector("#participantId");
 
   function loadStudyData() {
     browser.storage.local
@@ -18,6 +20,15 @@ import { mapreplacer, mapreviver } from "./utils.js";
         msuChoices = JSON.parse(msuChoices, mapreviver);
         msuChoices.forEach(addMsuChoiceRows);
       });
+      browser.storage.sync
+        .get([
+          "studyParticipantId",
+        ])
+        .then((res) => {
+          if (res.studyParticipantId) {
+            partIdCell.innerHTML = res.studyParticipantId;
+          }
+        });
   }
 
   function addMsuChoiceRows(msuChoices, tsType) {
@@ -39,10 +50,6 @@ import { mapreplacer, mapreviver } from "./utils.js";
   }
 
 
-  function clearStudyData() {
-    browser.storage.local.remove("msuChoices");
-  }
-
   document.addEventListener("DOMContentLoaded", loadStudyData);
-  document.querySelector("#studypurge").addEventListener("click", clearStudyData);
+  document.querySelector("#studypurge").addEventListener("click", resetStudyData);
 })();
