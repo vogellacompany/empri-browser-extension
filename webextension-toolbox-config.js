@@ -30,6 +30,18 @@ module.exports = {
       });
     }
 
+    if (process.env.NODE_ENV === "production") {
+      var apiUrl = "https://empri-devops.vogella.com:5555";
+    } else if (process.env.NODE_ENV === "development") {
+      var apiUrl = "http://localhost:5555";
+    }
+
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        API_URL: JSON.stringify(apiUrl),
+      })
+    );
+
     // Important: return the modified config
     return config;
   },
