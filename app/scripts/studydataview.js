@@ -1,10 +1,12 @@
 import { mapreplacer, mapreviver } from "./utils.js";
-import { resetStudyData } from "./study.js";
+import { getDaysSinceOptIn, resetStudyData } from "./study.js";
 
 (() => {
   let placeholder = document.querySelector("#placeholder");
   let msuTable = placeholder.parentElement;
   let partIdCell = document.querySelector("#participantId");
+  let optInDateCell = document.querySelector("#optInDate");
+  let daysSinceCell = document.querySelector("#daysSinceOptIn");
 
   function loadStudyData() {
     browser.storage.local
@@ -23,10 +25,17 @@ import { resetStudyData } from "./study.js";
       browser.storage.sync
         .get([
           "studyParticipantId",
+          "studyOptInDate",
         ])
         .then((res) => {
           if (res.studyParticipantId) {
             partIdCell.innerHTML = res.studyParticipantId;
+          }
+          if (res.studyOptInDate) {
+            optInDateCell.innerHTML = res.studyOptInDate;
+            getDaysSinceOptIn(function(days) {
+              daysSinceCell.innerHTML = days;
+            });
           }
         });
   }
