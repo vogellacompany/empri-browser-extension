@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from 'uuid';
+import { mapreplacer, mapreviver } from "./utils.js";
 
 
 // Random participant identifier
@@ -59,4 +60,36 @@ export function getDaysSinceOptIn(callback) {
       callback(daysSinceOptIn);
     }
   });
+}
+
+
+export function updateStudyData(tsType, msu) {
+  // increment counter in local storage area
+  browser.storage.local
+    .get("msuChoices") // {TSTYPE: {MSU: Counter, ...}, ...}
+    .then((res) => {
+      var msuChoices = res.msuChoices;
+      if (msuChoices === undefined) {
+        msuChoices = new Map();
+      } else {
+        msuChoices = JSON.parse(msuChoices, mapreviver);
+      }
+
+      var tsStats = msuChoices.get(tsType);
+      if (tsStats === undefined) {
+        tsStats = new Map();
+      }
+      var tsMsuCount = tsStats.get(msu);
+      if (tsMsuCount === undefined) {
+        tsMsuCount = 0;
+      }
+      tsMsuCount++;
+      tsStats.set(msu, tsMsuCount);
+      msuChoices.set(tsType, tsStats);
+      let stringified = JSON.stringify(msuChoices, mapreplacer);
+      console.log(`LS: msuChoices ${stringified}`);
+
+      // store updated stats
+      browser.storage.local.set({ msuChoices: stringified });
+    });
 }
