@@ -1,5 +1,4 @@
-import { mapreplacer, mapreviver } from "./utils.js";
-import { getDaysSinceOptIn, resetStudyData } from "./study.js";
+import { calcDaysSince, resetStudyData } from "./study.js";
 
 (() => {
   let placeholder = document.querySelector("#placeholder");
@@ -9,53 +8,51 @@ import { getDaysSinceOptIn, resetStudyData } from "./study.js";
   let daysSinceCell = document.querySelector("#daysSinceOptIn");
 
   function loadStudyData() {
-    browser.storage.local
-      .get([
-        "msuChoices",
-      ])
-      .then((res) => {
-        let msuChoices = res.msuChoices;
-        if (msuChoices === undefined) {
-          return;  // load nothing
-        }
-        placeholder.remove();
-        msuChoices = JSON.parse(msuChoices, mapreviver);
-        msuChoices.forEach(addMsuChoiceRows);
-      });
-      browser.storage.sync
-        .get([
-          "studyParticipantId",
-          "studyOptInDate",
-        ])
-        .then((res) => {
-          if (res.studyParticipantId) {
-            partIdCell.innerHTML = res.studyParticipantId;
-          }
-          if (res.studyOptInDate) {
-            optInDateCell.innerHTML = res.studyOptInDate;
-            getDaysSinceOptIn(function(days) {
-              daysSinceCell.innerHTML = days;
-            });
-          }
-        });
+    browser.storage.local.get("msuChoices")
+    .then((res) => {
+      let msuChoices = res.msuChoices;
+      if (msuChoices === undefined) {
+        return;  // load nothing
+      }
+      placeholder.remove();
+      msuChoices.forEach(addMsuChoiceRows);
+    })
+    .catch(error => console.error(error));
+
+    browser.storage.sync.get([
+      "studyParticipantId",
+      "studyOptInDate",
+    ])
+    .then((res) => {
+      if (res.studyParticipantId) {
+        partIdCell.innerHTML = res.studyParticipantId;
+      }
+      if (res.studyOptInDate) {
+        optInDateCell.innerHTML = res.studyOptInDate;
+        daysSinceCell.innerHTML = calcDaysSince(res.studyOptInDate);
+      }
+    })
+    .catch(error => console.error(error));
   }
 
-  function addMsuChoiceRows(msuChoices, tsType) {
-    var group = document.createElement("tbody");
-    msuChoices.forEach((frequency, msu) => {
-      var row = document.createElement("tr");
-      var tsCol = document.createElement("td");
-      tsCol.innerHTML = tsType;
-      row.appendChild(tsCol);
-      var msuCol = document.createElement("td");
-      msuCol.innerHTML = msu;
-      row.appendChild(msuCol);
-      var freqCol = document.createElement("td");
-      freqCol.innerHTML = frequency;
-      row.appendChild(freqCol);
-      group.appendChild(row);
-    });
-    msuTable.appendChild(group);
+  function addMsuChoiceRows(record) {
+    var row = document.createElement("tr");
+    var urlCol = document.createElement("td");
+    urlCol.innerHTML = record.url;
+    row.appendChild(urlCol);
+    var tsCol = document.createElement("td");
+    tsCol.innerHTML = record.xpath;
+    row.appendChild(tsCol);
+    var msuCol = document.createElement("td");
+    msuCol.innerHTML = record.mostSignificantUnit;
+    row.appendChild(msuCol);
+    var daysCol = document.createElement("td");
+    daysCol.innerHTML = record.daysSinceOptIn;
+    row.appendChild(daysCol);
+    var freqCol = document.createElement("td");
+    freqCol.innerHTML = record.frequency;
+    row.appendChild(freqCol);
+    msuTable.appendChild(row);
   }
 
 
