@@ -216,11 +216,13 @@ function getTimestampType(el) {
       let tsType = getTimestampType(el);
       let msu = el.dataset.mostsigunit;
       console.log(`Unredact ${tsType} to ${msu}`);
-      browser.storage.sync.get("studyOptIn").then((res) => {
+      browser.storage.sync.get("studyOptIn")
+      .then((res) => {
         if (res.studyOptIn) {
           updateStudyData(tsType, msu);
         }
-      });
+      })
+      .catch(error => console.error(error));
     }
 
     function redactTimestamps() {
