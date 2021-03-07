@@ -133,3 +133,27 @@ export function updateStudyData(tsType, msu) {
   })
   .catch(error => console.error(error));
 }
+
+
+export function buildReport(firstDay = 0) {
+  return Promise.all([
+    browser.storage.local.get("msuChoices"),
+    browser.storage.sync.get([
+      "studyOptInDate",
+      "studyParticipantId",
+    ]),
+  ])
+  .then((results) => {
+    let msuChoices = results[0].msuChoices;
+    let optInDate = results[1].studyOptInDate;
+    let partID = results[1].studyParticipantId;
+    let report = new Report(partID);
+
+    // filter out entries before firstDay
+    let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
+    report.entries = allEntries.filter(e => e.daysSinceOptIn >= firstDay);
+
+    return report;
+  })
+  .catch(error => console.error(error));
+}
