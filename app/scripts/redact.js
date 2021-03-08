@@ -3,6 +3,25 @@ import { updateStudyData } from "./study.js";
 
 const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
 
+// GitHub View/URL classifier
+const ghBaseUrlTypes = {
+  root: /^\/?$/i,
+  user: /^\/[^/]+\/?$/i,
+};
+const ghRepoUrlTypes = {
+  commits: /^\/commits\//i,
+  commit: /^\/commit\/[0-9a-f]+\/?$/i,
+  issuelist: /^\/issues\/?$/i,
+  issue: /^\/issues\/\d+\/?$/i,
+  label: /^\/labels\/\w+\/?$/i,
+  milestone: /^\/milestones\/\d+\/?$/i,
+  pulllist: /^\/pulls\/?$/i,
+  pull: /^\/pull\/\d+\/?$/i,
+  pullcommits: /^\/pull\/\d+\/commits\/?$/i,
+  pullcommit: /^\/pull\/\d+\/commits\/[0-9a-f]+\/?$/i,
+  repo: /^\/?$/i,
+};
+
 // build simple xpath to element
 function getPathTo(element) {
   // recursively build path from element up to the root
@@ -227,29 +246,23 @@ function getTimestampType(el) {
     }
     function getUrlType() {
       let path = window.location.pathname;
+      let numPathComp = path.split("/").length - 1; // -1 because path starts with /
       let subrepopath = path.replace(/^(\/[^/]+){2}/i, "");
-      const ghUrlTypes = {
-        commits: /^\/commits\//i,
-        commit: /^\/commit\/[0-9a-f]+\/?$/i,
-        issuelist: /^\/issues\/?$/i,
-        issue: /^\/issues\/\d+\/?$/i,
-        label: /^\/labels\/\w+\/?$/i,
-        milestone: /^\/milestones\/\d+\/?$/i,
-        pulllist: /^\/pulls\/?$/i,
-        pull: /^\/pull\/\d+\/?$/i,
-        pullcommits: /^\/pull\/\d+\/commits\/?$/i,
-        pullcommit: /^\/pull\/\d+\/commits\/[0-9a-f]+\/?$/i,
-        root: /^\/?$/i,
-      };
-      let pathType = subrepopath;
-      for (var type in ghUrlTypes) {
-        if (ghUrlTypes.hasOwnProperty(type)) {
-            if (ghUrlTypes[type].test(subrepopath)) {
+      let types;
+      if (numPathComp < 2) {
+        types = ghBaseUrlTypes;
+      } else {
+        path = path.replace(/^(\/[^/]+){2}/i, "");
+        types = ghRepoUrlTypes;
+      }
+      for (var type in types) {
+        if (types.hasOwnProperty(type)) {
+            if (types[type].test(path)) {
                 return type;
             }
         }
       }
-      console.error(`No matching url type for ${subrepopath}`);
+      console.error(`No matching url type for ${path}`);
       return "unknown";
     }
 
