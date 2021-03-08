@@ -9,6 +9,7 @@ const ghBaseUrlTypes = {
   user: /^\/[^/]+\/?$/i,
 };
 const ghRepoUrlTypes = {
+  compare: /^\/compare\/[^/]+\/?$/i,
   commits: /^\/commits\//i,
   commit: /^\/commit\/[0-9a-f]+\/?$/i,
   issuelist: /^\/issues\/?$/i,
@@ -20,6 +21,10 @@ const ghRepoUrlTypes = {
   pullcommits: /^\/pull\/\d+\/commits\/?$/i,
   pullcommit: /^\/pull\/\d+\/commits\/[0-9a-f]+\/?$/i,
   repo: /^\/?$/i,
+  releaselist: /^\/releases\/?$/i,
+  release: /^\/releases\/tag\/[^/]+\/?$/i,
+  taglist: /^\/tags\/?$/i,
+  tree: /^\/tree\//i,
 };
 
 // build simple xpath to element
