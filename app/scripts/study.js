@@ -96,9 +96,9 @@ export function calcDaysSince(date) {
 }
 
 
-export function updateStudyData(tsType, msu) {
+export function updateStudyData(urlType, tsType, msu) {
   // increment counter in local storage area
-  Promise.all([
+  return Promise.all([
     browser.storage.local.get("msuChoices"),
     browser.storage.sync.get("studyOptInDate"), // to calc daysSince
   ])
@@ -111,7 +111,7 @@ export function updateStudyData(tsType, msu) {
     }
 
     let daysSince = calcDaysSince(sync.studyOptInDate);
-    let newChoice = new MsuChoiceRecord(daysSince, "", tsType, msu);
+    let newChoice = new MsuChoiceRecord(daysSince, urlType, tsType, msu);
 
     // reuse existing matching choice or add new one
     let msuChoices = Array.from(local.msuChoices, MsuChoiceRecord.from);

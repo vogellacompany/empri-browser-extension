@@ -215,14 +215,42 @@ function getTimestampType(el) {
       // unredact to the msu of the original datetime
       let tsType = getTimestampType(el);
       let msu = el.dataset.mostsigunit;
-      console.log(`Unredact ${tsType} to ${msu}`);
+      let urlType = getUrlType();
+      console.log(`Unredact ${urlType} ${tsType} to ${msu}`);
       browser.storage.sync.get("studyOptIn")
       .then((res) => {
         if (res.studyOptIn) {
-          updateStudyData(tsType, msu);
+          return updateStudyData(urlType, tsType, msu);
         }
       })
       .catch(error => console.error(error));
+    }
+    function getUrlType() {
+      let path = window.location.pathname;
+      let subrepopath = path.replace(/^(\/[^/]+){2}/i, "");
+      const ghUrlTypes = {
+        commits: /^\/commits\//i,
+        commit: /^\/commit\/[0-9a-f]+\/?$/i,
+        issuelist: /^\/issues\/?$/i,
+        issue: /^\/issues\/\d+\/?$/i,
+        label: /^\/labels\/\w+\/?$/i,
+        milestone: /^\/milestones\/\d+\/?$/i,
+        pulllist: /^\/pulls\/?$/i,
+        pull: /^\/pull\/\d+\/?$/i,
+        pullcommits: /^\/pull\/\d+\/commits\/?$/i,
+        pullcommit: /^\/pull\/\d+\/commits\/[0-9a-f]+\/?$/i,
+        root: /^\/?$/i,
+      };
+      let pathType = subrepopath;
+      for (var type in ghUrlTypes) {
+        if (ghUrlTypes.hasOwnProperty(type)) {
+            if (ghUrlTypes[type].test(subrepopath)) {
+                return type;
+            }
+        }
+      }
+      console.error(`No matching url type for ${subrepopath}`);
+      return "unknown";
     }
 
     function redactTimestamps() {
