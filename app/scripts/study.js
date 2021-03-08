@@ -119,14 +119,10 @@ export function updateStudyData(urlType, tsType, msu) {
     if (matchingRecord === undefined) {
       msuChoices.push(newChoice);
       matchingRecord = newChoice;
-      console.log("No match");
-    } else {
-      console.log(`Matched ${JSON.stringify(matchingRecord)}`);
     }
 
     // increment choice frequency
     matchingRecord.inc();
-    console.log(`LS: msuChoices ${JSON.stringify(msuChoices)}`);
 
     // store updated stats
     return browser.storage.local.set({ msuChoices: msuChoices });
