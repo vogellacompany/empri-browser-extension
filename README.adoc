@@ -1,0 +1,35 @@
+= README
+
+== Docker build
+
+[source, terminal]
+----
+./gradlew bootBuildImage --imageName=empri-browser-plugin-server/app
+----
+
+Run docker containers locally:
+----
+docker-compose --env-file ./config/.env.dev up
+----
+
+Stop & remove docker containers:
+----
+docker-compose --env-file ./config/.env.dev down
+----
+
+Remove volume:
+
+----
+# find exact volume name:
+docker volume ls | rg empri
+
+# remove volume
+docker volume rm empri-browser-plugin-server_postgres-data
+----
+
+----
+docker ps -a
+CONTAINER ID        IMAGE                                    COMMAND                  CREATED             STATUS                       PORTS               NAMES
+e5658124be6b        empri-browser-plugin-server/app:latest   "/cnb/process/web"       19 seconds ago      Exited (143) 6 seconds ago                       web-app
+59295edda1f2        postgres:13                              "docker-entrypoint.s…"   21 seconds ago      Exited (0) 6 seconds ago                         postgres-db
+----
