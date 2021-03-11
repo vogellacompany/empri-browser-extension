@@ -15,6 +15,7 @@
   position: absolute;
   clear: both;
   background-color: white;
+  cursor: default;
   min-width: 160px;
   padding: 5px 5px;
   overflow: auto;
