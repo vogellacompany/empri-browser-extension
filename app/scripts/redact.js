@@ -63,6 +63,8 @@ function getTimestampType(el) {
       Second: "second",
     };
     function createPopup(event) {
+      // -save and remove all other popups
+      saveAndRemoveAllPopups();
       // - insert div around ts element if not already present
       var parent = this.parentNode;
       if (!parent.classList.contains("dropdown")) {
@@ -99,8 +101,7 @@ function getTimestampType(el) {
         var okbtn = document.createElement("button");
         okbtn.innerHTML = "✓";
         okbtn.addEventListener("click", function () {
-          removePopup(ts); // remove remaining dropdowns from DOM
-          logChoice(ts); // log the redaction choice
+          saveAndRemovePopup(ts);
         });
         ddcontent.appendChild(okbtn);
         // Info Text
@@ -113,8 +114,7 @@ function getTimestampType(el) {
           sel.id = msu;
           sel.addEventListener("click", function() {
             unredact(ts, msu);
-            removePopup(ts); // remove remaining dropdowns from DOM
-            logChoice(ts); // log the redaction choice
+            saveAndRemovePopup(ts);
           });
           sel.innerHTML = displayText;
           ddcontent.appendChild(sel);
@@ -170,6 +170,10 @@ function getTimestampType(el) {
       origParent.insertBefore(el, ddwrapper);
       origParent.removeChild(ddwrapper);
     }
+    function saveAndRemovePopup(dbtn) {
+      removePopup(dbtn); // remove remaining dropdowns from DOM
+      logChoice(dbtn); // log the redaction choice
+    }
     function redact2globalpref(el) {
       browser.storage.sync.get(["mostsigunit"]).then((res) => {
         // remember original datetime for selective controls
@@ -219,7 +223,6 @@ function getTimestampType(el) {
     }
     function logChoice(el) {
       // log the unredaction choice of the user
-      //removePopup(el);  // make sure DOM is clean for path calc
       // unredact to the msu of the original datetime
       let tsType = getTimestampType(el);
       let msu = el.dataset.mostsigunit;
@@ -341,16 +344,19 @@ function getTimestampType(el) {
       characterData: false,
     });
 
+    function saveAndRemoveAllPopups() {
+      document.querySelectorAll(".dropdown > .dropbtn").forEach((dbtn) => {
+        saveAndRemovePopup(dbtn); // remove remaining dropdowns from DOM
+      });
+    }
+
     // - set popup close listeners (click outside)
     window.onclick = function (event) {
       if (!event.target.matches(".dropbtn")) {
         document.querySelectorAll(".dropdown-content.show").forEach((dd) => {
           dd.classList.remove("show");
         });
-        document.querySelectorAll(".dropdown > .dropbtn").forEach((dbtn) => {
-          removePopup(dbtn); // remove remaining dropdowns from DOM
-          logChoice(dbtn); // log the redaction choice
-        });
+        saveAndRemoveAllPopups();
       }
     };
   });
