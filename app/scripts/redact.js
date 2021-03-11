@@ -62,7 +62,7 @@ function getTimestampType(el) {
       Minute: "minute",
       Second: "second",
     };
-    function createPopup() {
+    function createPopup(event) {
       // - insert div around ts element if not already present
       var parent = this.parentNode;
       if (!parent.classList.contains("dropdown")) {
@@ -73,6 +73,12 @@ function getTimestampType(el) {
         var ddcontent = document.createElement("div");
         ddcontent.classList.add("dropdown-content");
         ddwrapper.appendChild(ddcontent);
+        ddcontent.addEventListener("click", function(event) {
+          // catch and discard all clicks on the open popup
+          // to prevent parent links from being followed etc
+          event.preventDefault();
+          event.stopPropagation();
+        });
         var ts = this;
         // Date preview <input id="dateprev" type="datetime-local" readonly>
         var dateprev = document.createElement("span");
@@ -92,59 +98,34 @@ function getTimestampType(el) {
         // Ok/close button – dummy button to close the popup
         var okbtn = document.createElement("button");
         okbtn.innerHTML = "✓";
+        okbtn.addEventListener("click", function () {
+          removePopup(ts); // remove remaining dropdowns from DOM
+          logChoice(ts); // log the redaction choice
+        });
         ddcontent.appendChild(okbtn);
         // Info Text
         var info = document.createElement("p");
         info.innerHTML = "Select date precision";
         ddcontent.appendChild(info);
-        // Year
-        var ddYear = document.createElement("a");
-        ddYear.id = "year";
-        ddYear.addEventListener("click", function () {
-          unredact(ts, Timeunit.Year);
-        });
-        ddYear.innerHTML = "yyyy";
-        ddcontent.appendChild(ddYear);
-        // Month
-        var ddMonth = document.createElement("a");
-        ddMonth.id = "month";
-        ddMonth.addEventListener("click", function () {
-          unredact(ts, Timeunit.Month);
-        });
-        ddMonth.innerHTML = "mm";
-        ddcontent.appendChild(ddMonth);
-        // Day
-        var ddDay = document.createElement("a");
-        ddDay.id = "day";
-        ddDay.addEventListener("click", function () {
-          unredact(ts, Timeunit.Day);
-        });
-        ddDay.innerHTML = "dd";
-        ddcontent.appendChild(ddDay);
-        // Hour
-        var ddHour = document.createElement("a");
-        ddHour.id = "hour";
-        ddHour.addEventListener("click", function () {
-          unredact(ts, Timeunit.Hour);
-        });
-        ddHour.innerHTML = "HH";
-        ddcontent.appendChild(ddHour);
-        // Minute
-        var ddMinute = document.createElement("a");
-        ddMinute.id = "minute";
-        ddMinute.addEventListener("click", function () {
-          unredact(ts, Timeunit.Minute);
-        });
-        ddMinute.innerHTML = "MM";
-        ddcontent.appendChild(ddMinute);
-        // Second
-        var ddSecond = document.createElement("a");
-        ddSecond.id = "second";
-        ddSecond.addEventListener("click", function () {
-          unredact(ts, Timeunit.Second);
-        });
-        ddSecond.innerHTML = "SS";
-        ddcontent.appendChild(ddSecond);
+        // add msu quick-selectors/indicators
+        function addMsuSel(msu, displayText) {
+          var sel = document.createElement("a");
+          sel.id = msu;
+          sel.addEventListener("click", function() {
+            unredact(ts, msu);
+            removePopup(ts); // remove remaining dropdowns from DOM
+            logChoice(ts); // log the redaction choice
+          });
+          sel.innerHTML = displayText;
+          ddcontent.appendChild(sel);
+          return sel;
+        }
+        addMsuSel(Timeunit.Year, "yyyy");
+        addMsuSel(Timeunit.Month, "mm");
+        addMsuSel(Timeunit.Day, "dd");
+        addMsuSel(Timeunit.Hour, "HH");
+        addMsuSel(Timeunit.Minute, "MM");
+        addMsuSel(Timeunit.Second, "SS");
       } else {
         var ddcontent = this.nextElementSibling;
       }
@@ -152,6 +133,9 @@ function getTimestampType(el) {
       setActiveMsu(ts);
       // - set menu visible
       ddcontent.classList.toggle("show");
+      // - stop propagation of click to parent nodes
+      event.preventDefault();
+      event.stopPropagation();
     }
     function setActiveMsu(el) {
       let msu = el.dataset.mostsigunit;
@@ -359,7 +343,7 @@ function getTimestampType(el) {
 
     // - set popup close listeners (click outside)
     window.onclick = function (event) {
-      if (!event.target.matches(".dropbtn, #enhance")) {
+      if (!event.target.matches(".dropbtn")) {
         document.querySelectorAll(".dropdown-content.show").forEach((dd) => {
           dd.classList.remove("show");
         });
