@@ -14,7 +14,7 @@ services:
     # Give the container the name web-app. You can changes to something else.
     container_name: web-app
     restart: always
-    # Forward the exposed port 5555 on the container to localhost on port 6666 on the host machine
+    # Forward the exposed port 5555 on the container to localhost on port 5005 on the host machine
     ports:
       - "127.0.0.1:5005:5555"
     networks:
@@ -22,12 +22,12 @@ services:
     # This service depends on postgres. Start that first.
     depends_on:
       - db
-    # Service health check
-    healthcheck:
-      test: curl -f http://localhost:5555/health_check || exit 1
-      interval: 1m
-      timeout: 10s
-      retries: 2
+    # Service health check, deactivated since Spring Boot container don't contain curl or netcat
+    # healthcheck:
+    #   test: curl -f http://localhost:5005/health_check || exit 1
+    #   interval: 1m
+    #   timeout: 10s
+    #   retries: 2
     environment:
       - BROWSER_USER
       - BROWSER_PASSWORD
