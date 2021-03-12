@@ -122,6 +122,7 @@ function getTimestampType(el) {
           sel.id = msu;
           sel.addEventListener("click", function() {
             unredact(ts, msu);
+            ts.dataset.msuChanged = true;
             saveAndRemovePopup(ts);
           });
           sel.innerHTML = displayText;
@@ -163,6 +164,7 @@ function getTimestampType(el) {
         dateprevFormat
       );
       setActiveMsu(el);
+      el.dataset.msuChanged = true;
     }
     function removePopup(el) {
       // remove dropdown elements from DOM
@@ -251,6 +253,10 @@ function getTimestampType(el) {
     }
     function logChoice(el) {
       // log the unredaction choice of the user
+      if (el.dataset.msuChanged !== "true") {
+        return; // msu did not change – nothing to log
+      }
+      el.dataset.msuChanged = false; // clear flag
       // unredact to the msu of the original datetime
       let tsType = getTimestampType(el);
       let msu = el.dataset.mostsigunit;
