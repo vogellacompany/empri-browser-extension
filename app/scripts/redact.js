@@ -62,16 +62,25 @@ function getTimestampType(el) {
       Minute: "minute",
       Second: "second",
     };
-    function createPopup(event) {
-      // -save and remove all other popups
-      saveAndRemoveAllPopups();
+    function hasPopup(ts) {
+      var parent = ts.parentNode;
+      return parent.classList.contains("dropdown");
+    }
+    function createPopup(ts, twoClickNote = false) {
       // - insert div around ts element if not already present
-      var parent = this.parentNode;
-      if (!parent.classList.contains("dropdown")) {
+      var parent = ts.parentNode;
+      if (!hasPopup(ts)) {
         var ddwrapper = document.createElement("div");
         ddwrapper.classList.add("dropdown");
-        parent.insertBefore(ddwrapper, this);
-        ddwrapper.appendChild(this);
+        parent.insertBefore(ddwrapper, ts);
+        ddwrapper.appendChild(ts);
+        if (twoClickNote) {
+          var note = document.createElement("span");
+          note.innerHTML = "Click again to follow link";
+          note.classList.add("popuptext");
+          note.classList.add("show");
+          ddwrapper.appendChild(note);
+        }
         var ddcontent = document.createElement("div");
         ddcontent.classList.add("dropdown-content");
         ddwrapper.appendChild(ddcontent);
@@ -81,7 +90,6 @@ function getTimestampType(el) {
           event.preventDefault();
           event.stopPropagation();
         });
-        var ts = this;
         // Date preview <input id="dateprev" type="datetime-local" readonly>
         var dateprev = document.createElement("span");
         dateprev.id = "dateprev";
@@ -127,15 +135,12 @@ function getTimestampType(el) {
         addMsuSel(Timeunit.Minute, "MM");
         addMsuSel(Timeunit.Second, "SS");
       } else {
-        var ddcontent = this.nextElementSibling;
+        var ddcontent = ts.nextElementSibling;
       }
       // - set active msu
       setActiveMsu(ts);
       // - set menu visible
       ddcontent.classList.toggle("show");
-      // - stop propagation of click to parent nodes
-      event.preventDefault();
-      event.stopPropagation();
     }
     function setActiveMsu(el) {
       let msu = el.dataset.mostsigunit;
@@ -174,6 +179,29 @@ function getTimestampType(el) {
       removePopup(dbtn); // remove remaining dropdowns from DOM
       logChoice(dbtn); // log the redaction choice
     }
+    function hasAnchorParent(el) {
+      while (el.parentNode) {
+        el = el.parentNode;
+          if (el.tagName === 'A')
+            return true;
+      }
+      return false;
+    }
+    function tsClickHandler(event) {
+      let alreadyOpen = hasPopup(this);
+      // - save and remove all popups
+      // (including potentially open one for this)
+      saveAndRemoveAllPopups();
+      if (alreadyOpen) {
+        // second click closes, no re-open (toggle)
+        return;
+      }
+      let anchorParent = hasAnchorParent(this);
+      createPopup(this, anchorParent);
+      // - stop propagation of opening click to parent nodes
+      event.preventDefault();
+      event.stopPropagation();
+    }
     function redact2globalpref(el) {
       browser.storage.sync.get(["mostsigunit"]).then((res) => {
         // remember original datetime for selective controls
@@ -187,7 +215,7 @@ function getTimestampType(el) {
         // - make el the dropdown button
         el.classList.add("dropbtn");
         // - set popup trigger
-        el.addEventListener("click", createPopup);
+        el.addEventListener("click", tsClickHandler);
       });
     }
     function redact(el, dateTime, mostsigunit) {
