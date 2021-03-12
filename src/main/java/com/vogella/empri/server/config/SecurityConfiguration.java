@@ -22,7 +22,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
 		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
-		http.formLogin().disable().httpBasic().and().authorizeRequests().anyRequest().authenticated();
+		http.formLogin().disable().httpBasic().and().authorizeRequests().antMatchers("/health_check").permitAll()
+				.anyRequest().authenticated();
     }
     
     @Override
