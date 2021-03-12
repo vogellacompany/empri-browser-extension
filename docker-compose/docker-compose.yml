@@ -14,9 +14,9 @@ services:
     # Give the container the name web-app. You can changes to something else.
     container_name: web-app
     restart: always
-    # Forward the exposed port 5555 on the container to port 5555 on the host machine
+    # Forward the exposed port 5555 on the container to localhost on port 6666 on the host machine
     ports:
-      - "127.0.0.1:5555:5555"
+      - "127.0.0.1:6666:5555"
     networks:
       - backend
     # This service depends on postgres. Start that first.
