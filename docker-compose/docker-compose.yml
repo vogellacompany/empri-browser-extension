@@ -16,7 +16,7 @@ services:
     restart: always
     # Forward the exposed port 5555 on the container to port 5555 on the host machine
     ports:
-      - "5555:5555"
+      - "127.0.0.1:5555:5555"
     networks:
       - backend
     # This service depends on postgres. Start that first.
@@ -49,7 +49,7 @@ services:
       - backend
     # Maps port 5432 (localhost) to port 5432 on the container. You can change the ports to fix your needs.
     # ports:
-    #   - "5432:5432"
+    #   - "127.0.0.1:5432:5432"
     # Setup the username, password, and database name. You can changes these values.
     environment:
       POSTGRES_USER: ${PSQL_USERNAME}
