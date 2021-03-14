@@ -79,6 +79,7 @@ export function initStudy() {
 
 export function clearStudyData() {
   browser.storage.local.remove("msuChoices");
+  browser.storage.local.remove("studyLastReport");
   browser.storage.sync.remove("studyParticipantId");
   browser.storage.sync.remove("studyOptInDate");
 }
@@ -90,9 +91,15 @@ export function resetStudyData() {
 }
 
 
-export function calcDaysSince(date) {
+export function calcDaysSince(date, reference) {
+  let refDate;
+  if (reference === undefined) {
+    refDate = DateTime.utc();
+  } else {
+    refDate = DateTime.fromFormat(reference, "yyyy-MM-dd");
+  }
   let datetime = DateTime.fromFormat(date, "yyyy-MM-dd");
-  return -Math.trunc(datetime.diffNow("days").days);
+  return -Math.trunc(datetime.diff(refDate, "days").days);
 }
 
 
@@ -134,14 +141,10 @@ export function updateStudyData(urlType, tsType, msu) {
 export function buildReport(firstDay = 0) {
   return Promise.all([
     browser.storage.local.get("msuChoices"),
-    browser.storage.sync.get([
-      "studyOptInDate",
-      "studyParticipantId",
-    ]),
+    browser.storage.sync.get("studyParticipantId"),
   ])
   .then((results) => {
     let msuChoices = results[0].msuChoices;
-    let optInDate = results[1].studyOptInDate;
     let partID = results[1].studyParticipantId;
     let report = new Report(partID);
 
@@ -152,4 +155,42 @@ export function buildReport(firstDay = 0) {
     return report;
   })
   .catch(error => console.error(error));
+}
+
+
+export function sendReport() {
+  return Promise.all([
+    browser.storage.local.get("studyLastReport"),
+    browser.storage.sync.get("studyOptInDate"),
+  ])
+  .then((results) => {
+    let lastReport = results[0].studyLastReport;
+    let optInDate = results[1].studyOptInDate;
+    let startDay;
+
+    if (lastReport === undefined) {
+      startDay = 0; // first report – send everything
+    } else {
+      let daysSinceReport = calcDaysSince(lastReport);
+      if (daysSinceReport < 1) {
+        // already sent a report today – do nothing
+        return;
+      }
+      startDay = calcDaysSince(lastReport, optInDate);
+    }
+    return buildReport(startDay);
+  })
+  .then((report) => {
+    // TODO do sending
+    if (report) {
+      console.log(report);
+    }
+  })
+  .then((res) => {
+    if (res) {
+      // update last report date
+      let today = DateTime.utc().toFormat("yyyy-MM-dd");
+      return browser.storage.local.set({ studyLastReport: today });
+    }
+  });
 }

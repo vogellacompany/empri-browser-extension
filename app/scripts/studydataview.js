@@ -6,10 +6,17 @@ import { calcDaysSince, resetStudyData } from "./study.js";
   let partIdCell = document.querySelector("#participantId");
   let optInDateCell = document.querySelector("#optInDate");
   let daysSinceCell = document.querySelector("#daysSinceOptIn");
+  let lastReportCell = document.querySelector("#lastReport");
 
   function loadStudyData() {
-    browser.storage.local.get("msuChoices")
+    browser.storage.local.get([
+      "msuChoices",
+      "studyLastReport",
+    ])
     .then((res) => {
+      if (res.studyLastReport) {
+        lastReportCell.innerHTML = res.studyLastReport;
+      }
       let msuChoices = res.msuChoices;
       if (msuChoices === undefined) {
         return;  // load nothing

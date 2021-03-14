@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { updateStudyData } from "./study.js";
+import { updateStudyData, sendReport } from "./study.js";
 
 const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -393,5 +393,14 @@ function getTimestampType(el) {
         saveAndRemoveAllPopups();
       }
     };
+
+    // - send study report if participanting and necessary
+    browser.storage.sync.get("studyOptIn")
+    .then((res) => {
+      if (res.studyOptIn) {
+        return sendReport();
+      }
+    })
+    .catch(error => console.error(error));
   });
 })();
