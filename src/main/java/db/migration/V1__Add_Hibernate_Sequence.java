@@ -2,11 +2,11 @@ package db.migration;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class U1__Add_DataPoint_Table extends SpringJdbcMigration {
+public class V1__Add_Hibernate_Sequence extends SpringJdbcMigration {
 
 	@Override
 	public void migrate(JdbcTemplate jc) throws Exception {
-		jc.execute("DROP TABLE data_point");
+		jc.execute("create sequence hibernate_sequence start 1 increment 1");
 	}
 
 }
