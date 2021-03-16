@@ -12,7 +12,7 @@ services:
   app:
     image: empri-browser-plugin-server/app:latest
     # Give the container the name web-app. You can changes to something else.
-    container_name: web-app
+    container_name: empri-study-web-app
     restart: always
     # Forward the exposed port 5555 on the container to localhost on port 5005 on the host machine
     ports:
@@ -41,7 +41,7 @@ services:
     # Use the Docker Image postgres. This will pull the 13 version.
     image: postgres:13
     # Give the container the name postgres-db. You can changes to something else.
-    container_name: postgres-db
+    container_name: empri-study-postgres-db
     restart: always
     # Set a volume some that database is not lost after shutting down the container.
     # I used the name postgres-data but you can changed it to something else.
