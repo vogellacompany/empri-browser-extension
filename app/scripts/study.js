@@ -148,6 +148,10 @@ export function buildReport(firstDay = 0) {
     let partID = results[1].studyParticipantId;
     let report = new Report(partID);
 
+    if (msuChoices === undefined) {
+      msuChoices = []; 
+    }
+
     // filter out entries before firstDay
     let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
     report.entries = allEntries.filter(e => e.daysSinceOptIn >= firstDay);
@@ -182,7 +186,7 @@ export function sendReport() {
   })
   .then((report) => {
     // TODO do sending
-    if (report) {
+    if (report && report.entries.length > 0) {
       console.log(report);
     }
   })
