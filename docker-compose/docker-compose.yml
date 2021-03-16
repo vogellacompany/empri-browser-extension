@@ -34,6 +34,7 @@ services:
       - PSQL_USERNAME
       - PSQL_PASSWORD
       - PSQL_DB_NAME
+      - SPRING_PROFILES_ACTIVE=production
       - PSQL_HOST=empri-study-postgres-db
   # Database Service (Postgres)
   db:
