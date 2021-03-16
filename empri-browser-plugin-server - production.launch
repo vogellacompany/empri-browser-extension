@@ -10,10 +10,12 @@
         <mapEntry key="BROWSER_PASSWORD" value="secrets"/>
         <mapEntry key="BROWSER_USER" value="browser"/>
         <mapEntry key="PSQL_DB_NAME" value="empri"/>
+        <mapEntry key="PSQL_HOST" value="localhost"/>
         <mapEntry key="PSQL_PASSWORD" value="secrets"/>
         <mapEntry key="PSQL_USERNAME" value="empri"/>
         <mapEntry key="spring.profiles.active" value="production"/>
     </mapAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.buildship.core.classpathprovider"/>

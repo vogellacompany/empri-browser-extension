@@ -34,6 +34,7 @@ services:
       - PSQL_USERNAME
       - PSQL_PASSWORD
       - PSQL_DB_NAME
+      - PSQL_HOST=empri-study-postgres-db
   # Database Service (Postgres)
   db:
     # Use the Docker Image postgres. This will pull the 13 version.
