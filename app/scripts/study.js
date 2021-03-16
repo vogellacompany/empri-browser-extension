@@ -103,32 +103,32 @@ export function updateStudyData(urlType, tsType, msu) {
     browser.storage.local.get("msuChoices"),
     browser.storage.sync.get("studyOptInDate"), // to calc daysSince
   ])
-    .then((results) => {
-      let local = results[0];
-      let sync = results[1];
+  .then((results) => {
+    let local = results[0];
+    let sync = results[1];
 
-      if (local.msuChoices === undefined) {
-        local.msuChoices = [];
-      }
+    if (local.msuChoices === undefined) {
+      local.msuChoices = [];
+    }
 
-      let daysSince = calcDaysSince(sync.studyOptInDate);
-      let newChoice = new MsuChoiceRecord(daysSince, urlType, tsType, msu);
+    let daysSince = calcDaysSince(sync.studyOptInDate);
+    let newChoice = new MsuChoiceRecord(daysSince, urlType, tsType, msu);
 
-      // reuse existing matching choice or add new one
-      let msuChoices = Array.from(local.msuChoices, MsuChoiceRecord.from);
-      let matchingRecord = msuChoices.find(newChoice.matches, newChoice);
-      if (matchingRecord === undefined) {
-        msuChoices.push(newChoice);
-        matchingRecord = newChoice;
-      }
+    // reuse existing matching choice or add new one
+    let msuChoices = Array.from(local.msuChoices, MsuChoiceRecord.from);
+    let matchingRecord = msuChoices.find(newChoice.matches, newChoice);
+    if (matchingRecord === undefined) {
+      msuChoices.push(newChoice);
+      matchingRecord = newChoice;
+    }
 
-      // increment choice frequency
-      matchingRecord.inc();
+    // increment choice frequency
+    matchingRecord.inc();
 
-      // store updated stats
-      return browser.storage.local.set({ msuChoices: msuChoices });
-    })
-    .catch((error) => console.error(error));
+    // store updated stats
+    return browser.storage.local.set({ msuChoices: msuChoices });
+  })
+  .catch((error) => console.error(error));
 }
 
 export function buildReport(firstDay = 0) {
@@ -136,22 +136,22 @@ export function buildReport(firstDay = 0) {
     browser.storage.local.get("msuChoices"),
     browser.storage.sync.get("studyParticipantId"),
   ])
-    .then((results) => {
-      let msuChoices = results[0].msuChoices;
-      let partID = results[1].studyParticipantId;
-      let report = new Report(partID);
+  .then((results) => {
+    let msuChoices = results[0].msuChoices;
+    let partID = results[1].studyParticipantId;
+    let report = new Report(partID);
 
-      if (msuChoices === undefined) {
-        msuChoices = [];
-      }
+    if (msuChoices === undefined) {
+      msuChoices = [];
+    }
 
-      // filter out entries before firstDay
-      let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
-      report.entries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay);
+    // filter out entries before firstDay
+    let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
+    report.entries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay);
 
-      return report;
-    })
-    .catch((error) => console.error(error));
+    return report;
+  })
+  .catch((error) => console.error(error));
 }
 
 export function sendReport() {
@@ -159,47 +159,47 @@ export function sendReport() {
     browser.storage.local.get("studyLastReport"),
     browser.storage.sync.get("studyOptInDate"),
   ])
-    .then((results) => {
-      let lastReport = results[0].studyLastReport;
-      let optInDate = results[1].studyOptInDate;
-      let startDay;
+  .then((results) => {
+    let lastReport = results[0].studyLastReport;
+    let optInDate = results[1].studyOptInDate;
+    let startDay;
 
-      if (lastReport === undefined) {
-        startDay = 0; // first report – send everything
-      } else {
-        let daysSinceReport = calcDaysSince(lastReport);
-        if (daysSinceReport < 1) {
-          // already sent a report today – do nothing
-          return;
-        }
-        startDay = calcDaysSince(lastReport, optInDate);
+    if (lastReport === undefined) {
+      startDay = 0; // first report – send everything
+    } else {
+      let daysSinceReport = calcDaysSince(lastReport);
+      if (daysSinceReport < 1) {
+        // already sent a report today – do nothing
+        return;
       }
-      return buildReport(startDay);
-    })
-    .then((report) => {
-      if (report && report.entries.length > 0) {
-        console.log(report);
-        return fetch(API_URL + "/data_point", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Basic " +
-              btoa(
-                process.env.BROWSER_USER + ":" + process.env.BROWSER_PASSWORD
-              ),
-          },
-          body: JSON.stringify(report),
-        })
-      }
-    })
-    .then((res) => {
-      if (res && res.status == 201) { // reporting succeeded
-        // update last report date
-        let today = DateTime.utc().toFormat("yyyy-MM-dd");
-        return browser.storage.local.set({ studyLastReport: today });
-      } else (res) { // reporting failed somehow
-        console.error("Reporting failed:", response);
-      }
-    });
+      startDay = calcDaysSince(lastReport, optInDate);
+    }
+    return buildReport(startDay);
+  })
+  .then((report) => {
+    if (report && report.entries.length > 0) {
+      console.log(report);
+      return fetch(API_URL + "/data_point", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Basic " +
+            btoa(
+              process.env.BROWSER_USER + ":" + process.env.BROWSER_PASSWORD
+            ),
+        },
+        body: JSON.stringify(report),
+      })
+    }
+  })
+  .then((res) => {
+    if (res && res.status == 201) { // reporting succeeded
+      // update last report date
+      let today = DateTime.utc().toFormat("yyyy-MM-dd");
+      return browser.storage.local.set({ studyLastReport: today });
+    } else (res) { // reporting failed somehow
+      console.error("Reporting failed:", response);
+    }
+  });
 }
