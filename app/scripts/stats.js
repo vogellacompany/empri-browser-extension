@@ -19,7 +19,9 @@ export class RunningStats {
   }
 
   get mean() {
-    this.validate()
+    if (this.count == 0) {
+      return Number.NaN
+    }
     return this._mean
   }
 
@@ -34,9 +36,14 @@ export class RunningStats {
     return Math.sqrt(this.variance)
   }
 
-  validate() {
-    if (this.count == 0) {
-      throw new Error('Mean is undefined')
+  values(includeCount = true) {
+    let vals = {
+      mean: this.mean,
+      variance: this.variance,
     }
+    if (includeCount) {
+      vals.count = this.count
+    }
+    return vals
   }
 }

@@ -1,4 +1,4 @@
-import { calcDaysSince, resetStudyData } from "./study.js";
+import { calcDaysSince, resetStudyData, MsuChoiceRecord } from "./study.js";
 
 (() => {
   let placeholder = document.querySelector("#placeholder");
@@ -17,7 +17,7 @@ import { calcDaysSince, resetStudyData } from "./study.js";
       if (res.studyLastReport) {
         lastReportCell.innerHTML = res.studyLastReport;
       }
-      let msuChoices = res.msuChoices;
+      let msuChoices = res.msuChoices.map(MsuChoiceRecord.from);
       if (msuChoices === undefined) {
         return;  // load nothing
       }
@@ -56,6 +56,9 @@ import { calcDaysSince, resetStudyData } from "./study.js";
     var daysCol = document.createElement("td");
     daysCol.innerHTML = record.daysSinceOptIn;
     row.appendChild(daysCol);
+    var distMeanCol = document.createElement("td");
+    distMeanCol.innerHTML = record.distanceStats.mean;
+    row.appendChild(distMeanCol);
     var freqCol = document.createElement("td");
     freqCol.innerHTML = record.frequency;
     row.appendChild(freqCol);
