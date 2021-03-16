@@ -179,7 +179,7 @@ export function sendReport() {
     .then((report) => {
       if (report && report.entries.length > 0) {
         console.log(report);
-        fetch(API_URL + "/data_point", {
+        return fetch(API_URL + "/data_point", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -191,22 +191,15 @@ export function sendReport() {
           },
           body: JSON.stringify(report),
         })
-          .then((response) => {
-            if (response.status != 201) {
-              console.error("Error:", response);
-            }
-            return true;
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
       }
     })
     .then((res) => {
-      if (res) {
+      if (res && res.status == 201) { // reporting succeeded
         // update last report date
         let today = DateTime.utc().toFormat("yyyy-MM-dd");
         return browser.storage.local.set({ studyLastReport: today });
+      } else (res) { // reporting failed somehow
+        console.error("Reporting failed:", response);
       }
     });
 }
