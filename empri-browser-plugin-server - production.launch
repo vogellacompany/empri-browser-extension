@@ -9,7 +9,7 @@
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
         <mapEntry key="BROWSER_PASSWORD" value="secrets"/>
         <mapEntry key="BROWSER_USER" value="browser"/>
-        <mapEntry key="PSQL_DB_NAME" value="empri"/>
+        <mapEntry key="PSQL_DB_NAME" value="empri-study-backend"/>
         <mapEntry key="PSQL_HOST" value="localhost"/>
         <mapEntry key="PSQL_PASSWORD" value="secrets"/>
         <mapEntry key="PSQL_USERNAME" value="empri"/>
