@@ -1,17 +1,22 @@
 import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
+import { RunningStats } from "./stats.js";
 
-class MsuChoiceRecord {
+export class MsuChoiceRecord {
   constructor(daysSince, url, tsType, msu, frequency = 0) {
     this.daysSinceOptIn = daysSince;
     this.url = url;
     this.xpath = tsType;
     this.mostSignificantUnit = msu;
     this.frequency = frequency;
+    this.distanceStats = new RunningStats();
   }
 
-  inc() {
+  inc(distance) {
     this.frequency++;
+    if (Number.isFinite(distance)) { // Ingore Infinite distances (no neighbours)
+      this.distanceStats.update(distance);
+    }
   }
 
   matches(other) {
@@ -23,8 +28,24 @@ class MsuChoiceRecord {
     );
   }
 
+  toReportFormat() {
+    let report = {
+      daysSinceOptIn: this.daysSinceOptIn,
+      url: this.url,
+      xpath: this.xpath,
+      mostSignificantUnit: this.mostSignificantUnit,
+      frequency: this.frequency
+    };
+    if (this.distanceStats.count > 0) { // timestamp has siblings (and distances)
+      report.distanceStats = this.distanceStats.values(false);
+    }
+    return report;
+  }
+
   static from(json) {
-    return Object.assign(new MsuChoiceRecord(), json);
+    let record = Object.assign(new MsuChoiceRecord(), json);
+    record.distanceStats = Object.assign(new RunningStats(), record.distanceStats);
+    return record;
   }
 }
 
@@ -32,12 +53,6 @@ class Report {
   constructor(partId) {
     this.participantIdentifier = partId;
     this.entries = [];
-  }
-
-  static from(json) {
-    let report = new Report(json.participantIdentifier);
-    report.entries = Array.from(json.entries, MsuCoiceRecord.from);
-    return report;
   }
 }
 
@@ -97,7 +112,7 @@ export function calcDaysSince(date, reference) {
   return -Math.trunc(datetime.diff(refDate, "days").days);
 }
 
-export function updateStudyData(urlType, tsType, msu) {
+export function updateStudyData(urlType, tsType, msu, distance) {
   // increment counter in local storage area
   return Promise.all([
     browser.storage.local.get("msuChoices"),
@@ -123,7 +138,7 @@ export function updateStudyData(urlType, tsType, msu) {
     }
 
     // increment choice frequency
-    matchingRecord.inc();
+    matchingRecord.inc(distance);
 
     // store updated stats
     return browser.storage.local.set({ msuChoices: msuChoices });
@@ -139,7 +154,7 @@ export function buildReport(firstDay = 0) {
   .then((results) => {
     let msuChoices = results[0].msuChoices;
     let partID = results[1].studyParticipantId;
-    let report = new Report(partID);
+    let report = {participantIdentifier: partID};
 
     if (msuChoices === undefined) {
       msuChoices = [];
@@ -147,7 +162,8 @@ export function buildReport(firstDay = 0) {
 
     // filter out entries before firstDay
     let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
-    report.entries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay);
+    let newEntries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay);
+    report.entries = newEntries.map((e) => e.toReportFormat());
 
     return report;
   })

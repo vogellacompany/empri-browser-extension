@@ -40,6 +40,36 @@ function getTimestampType(el) {
   return getPathTo(el);
 }
 
+function getSiblingTimestamps(el) {
+  // returns Array of timestamps that share the same xpath
+  let xpath = getPathTo(el)
+  let iter = document.evaluate("//"+xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null)
+  let siblings = []
+  var sibling = iter.iterateNext()
+  while (sibling) {
+    siblings.push(sibling)
+    sibling = iter.iterateNext()
+  }
+  return siblings
+}
+
+function calcDistanceToClosestSibling(el) {
+  // Returns absolute distance to closest sibling in seconds
+  // or NaN if el has no siblings
+  let siblings = getSiblingTimestamps(el)
+  let elIdx = siblings.indexOf(el)
+  console.assert(elIdx !== -1, "Element not found in siblings")
+  let directSibs = siblings.filter((sib, idx) => {
+    return Math.abs(idx - elIdx) === 1
+  })
+  let distances = directSibs.map(sib => {
+    let elDateTime = DateTime.fromISO(el.dataset.dtoriginally)
+    let sibDateTime = DateTime.fromISO(sib.dataset.dtoriginally)
+    return Math.abs(elDateTime.diff(sibDateTime).as("seconds"))
+  })
+  return Math.min(...distances)
+}
+
 (() => {
   if (window.ghRedactHasRun) {
     return;
@@ -259,13 +289,14 @@ function getTimestampType(el) {
       el.dataset.msuChanged = false; // clear flag
       // unredact to the msu of the original datetime
       let tsType = getTimestampType(el);
+      let closestSibDist = calcDistanceToClosestSibling(el); // Infinite if no siblings
       let msu = el.dataset.mostsigunit;
       let urlType = getUrlType();
-      console.log(`Unredact ${urlType} ${tsType} to ${msu}`);
+      console.log(`Unredact ${urlType} ${tsType} to ${msu} with distance ${closestSibDist}sec`);
       browser.storage.sync.get("studyOptIn")
       .then((res) => {
         if (res.studyOptIn) {
-          return updateStudyData(urlType, tsType, msu);
+          return updateStudyData(urlType, tsType, msu, closestSibDist);
         }
       })
       .catch(error => console.error(error));

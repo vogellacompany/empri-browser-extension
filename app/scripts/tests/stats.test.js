@@ -28,3 +28,14 @@ test('wikivec3', function (t) {
   t.equal(stats.variance, 30)
   t.end()
 });
+
+test('infinity', function (t) {
+  let stats = new RunningStats()
+  stats.update(Infinity);
+  t.equal(stats.mean, Infinity)
+  t.equal(stats.variance, NaN)
+  stats.update(Infinity);
+  t.equal(stats.mean, NaN)
+  t.equal(stats.variance, NaN)
+  t.end()
+});
