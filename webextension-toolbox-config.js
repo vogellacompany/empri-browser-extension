@@ -30,6 +30,13 @@ module.exports = {
       });
     }
 
+    config.plugins.push(
+      new webpack.EnvironmentPlugin({
+        BROWSER_USER: "browser",
+        BROWSER_PASSWORD: "secrets",
+      })
+    );
+
     if (process.env.NODE_ENV === "production") {
       var apiUrl = "https://empri-devops.vogella.com:5555";
     } else if (process.env.NODE_ENV === "development") {
