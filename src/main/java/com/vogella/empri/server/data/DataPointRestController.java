@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vogella.empri.server.data.dto.DataPointsDto;
+
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -16,11 +18,11 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DataPointRestController {
 
-	private DataPointRepository dataPointRepository;
+	private DataPointService dataPointService;
 
 	@PostMapping
-	public ResponseEntity<Object> createDataPoint(@RequestBody @Valid DataPoint dataPoint) {
-		dataPointRepository.save(dataPoint);
+	public ResponseEntity<Object> createDataPoint(@RequestBody @Valid DataPointsDto dataPoints) {
+		dataPointService.save(dataPoints);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }
