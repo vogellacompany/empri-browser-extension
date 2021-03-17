@@ -7,7 +7,7 @@ fi
 
 sudo -u postgres /usr/bin/env bash << 'EOF'
 USERNAME='empri'
-DATABASES=('empri')
+DATABASES=('empri-study-backend')
 if ! [ "$(psql -tAc "SELECT 1 FROM pg_user WHERE usename = '$USERNAME'")" = '1' ]; then
   echo "CREATING POSTGRESQL USER $USERNAME"
   createuser $USERNAME --pwprompt
