@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
 
 class MsuChoiceRecord {
   constructor(daysSince, url, tsType, msu, frequency = 0) {
@@ -16,17 +15,18 @@ class MsuChoiceRecord {
   }
 
   matches(other) {
-    return this.daysSinceOptIn == other.daysSinceOptIn &&
+    return (
+      this.daysSinceOptIn == other.daysSinceOptIn &&
       this.url == other.url &&
       this.xpath == other.xpath &&
-      this.mostSignificantUnit == other.mostSignificantUnit;
+      this.mostSignificantUnit == other.mostSignificantUnit
+    );
   }
 
-  static from(json){
+  static from(json) {
     return Object.assign(new MsuChoiceRecord(), json);
   }
 }
-
 
 class Report {
   constructor(partId) {
@@ -34,19 +34,17 @@ class Report {
     this.entries = [];
   }
 
-  static from(json){
+  static from(json) {
     let report = new Report(json.participantIdentifier);
     report.entries = Array.from(json.entries, MsuCoiceRecord.from);
     return report;
   }
 }
 
-
 // Random participant identifier
 function generateParticipantId() {
   return uuidv4();
 }
-
 
 // Init study
 // - generate participant id if not set
@@ -76,7 +74,6 @@ export function initStudy() {
     });
 }
 
-
 export function clearStudyData() {
   browser.storage.local.remove("msuChoices");
   browser.storage.local.remove("studyLastReport");
@@ -84,12 +81,10 @@ export function clearStudyData() {
   browser.storage.sync.remove("studyOptInDate");
 }
 
-
 export function resetStudyData() {
   clearStudyData();
   initStudy();
 }
-
 
 export function calcDaysSince(date, reference) {
   let refDate;
@@ -102,99 +97,96 @@ export function calcDaysSince(date, reference) {
   return -Math.trunc(datetime.diff(refDate, "days").days);
 }
 
-
 export function updateStudyData(urlType, tsType, msu) {
   // increment counter in local storage area
   return Promise.all([
     browser.storage.local.get("msuChoices"),
     browser.storage.sync.get("studyOptInDate"), // to calc daysSince
   ])
-  .then((results) => {
-    let local = results[0];
-    let sync = results[1];
+    .then((results) => {
+      let local = results[0];
+      let sync = results[1];
 
-    if (local.msuChoices === undefined) {
-      local.msuChoices = [];
-    }
+      if (local.msuChoices === undefined) {
+        local.msuChoices = [];
+      }
 
-    let daysSince = calcDaysSince(sync.studyOptInDate);
-    let newChoice = new MsuChoiceRecord(daysSince, urlType, tsType, msu);
+      let daysSince = calcDaysSince(sync.studyOptInDate);
+      let newChoice = new MsuChoiceRecord(daysSince, urlType, tsType, msu);
 
-    // reuse existing matching choice or add new one
-    let msuChoices = Array.from(local.msuChoices, MsuChoiceRecord.from);
-    let matchingRecord = msuChoices.find(newChoice.matches, newChoice);
-    if (matchingRecord === undefined) {
-      msuChoices.push(newChoice);
-      matchingRecord = newChoice;
-    }
+      // reuse existing matching choice or add new one
+      let msuChoices = Array.from(local.msuChoices, MsuChoiceRecord.from);
+      let matchingRecord = msuChoices.find(newChoice.matches, newChoice);
+      if (matchingRecord === undefined) {
+        msuChoices.push(newChoice);
+        matchingRecord = newChoice;
+      }
 
-    // increment choice frequency
-    matchingRecord.inc();
+      // increment choice frequency
+      matchingRecord.inc();
 
-    // store updated stats
-    return browser.storage.local.set({ msuChoices: msuChoices });
-  })
-  .catch(error => console.error(error));
+      // store updated stats
+      return browser.storage.local.set({ msuChoices: msuChoices });
+    })
+    .catch((error) => console.error(error));
 }
-
 
 export function buildReport(firstDay = 0) {
   return Promise.all([
     browser.storage.local.get("msuChoices"),
     browser.storage.sync.get("studyParticipantId"),
   ])
-  .then((results) => {
-    let msuChoices = results[0].msuChoices;
-    let partID = results[1].studyParticipantId;
-    let report = new Report(partID);
+    .then((results) => {
+      let msuChoices = results[0].msuChoices;
+      let partID = results[1].studyParticipantId;
+      let report = new Report(partID);
 
-    if (msuChoices === undefined) {
-      msuChoices = []; 
-    }
+      if (msuChoices === undefined) {
+        msuChoices = [];
+      }
 
-    // filter out entries before firstDay
-    let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
-    report.entries = allEntries.filter(e => e.daysSinceOptIn >= firstDay);
+      // filter out entries before firstDay
+      let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
+      report.entries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay);
 
-    return report;
-  })
-  .catch(error => console.error(error));
+      return report;
+    })
+    .catch((error) => console.error(error));
 }
-
 
 export function sendReport() {
   return Promise.all([
     browser.storage.local.get("studyLastReport"),
     browser.storage.sync.get("studyOptInDate"),
   ])
-  .then((results) => {
-    let lastReport = results[0].studyLastReport;
-    let optInDate = results[1].studyOptInDate;
-    let startDay;
+    .then((results) => {
+      let lastReport = results[0].studyLastReport;
+      let optInDate = results[1].studyOptInDate;
+      let startDay;
 
-    if (lastReport === undefined) {
-      startDay = 0; // first report – send everything
-    } else {
-      let daysSinceReport = calcDaysSince(lastReport);
-      if (daysSinceReport < 1) {
-        // already sent a report today – do nothing
-        return;
+      if (lastReport === undefined) {
+        startDay = 0; // first report – send everything
+      } else {
+        let daysSinceReport = calcDaysSince(lastReport);
+        if (daysSinceReport < 1) {
+          // already sent a report today – do nothing
+          return;
+        }
+        startDay = calcDaysSince(lastReport, optInDate);
       }
-      startDay = calcDaysSince(lastReport, optInDate);
-    }
-    return buildReport(startDay);
-  })
-  .then((report) => {
-    // TODO do sending
-    if (report && report.entries.length > 0) {
-      console.log(report);
-    }
-  })
-  .then((res) => {
-    if (res) {
-      // update last report date
-      let today = DateTime.utc().toFormat("yyyy-MM-dd");
-      return browser.storage.local.set({ studyLastReport: today });
-    }
-  });
+      return buildReport(startDay);
+    })
+    .then((report) => {
+      // TODO do sending
+      if (report && report.entries.length > 0) {
+        console.log(report);
+      }
+    })
+    .then((res) => {
+      if (res) {
+        // update last report date
+        let today = DateTime.utc().toFormat("yyyy-MM-dd");
+        return browser.storage.local.set({ studyLastReport: today });
+      }
+    });
 }
