@@ -177,9 +177,29 @@ export function sendReport() {
       return buildReport(startDay);
     })
     .then((report) => {
-      // TODO do sending
       if (report && report.entries.length > 0) {
         console.log(report);
+        fetch(API_URL + "/data_point", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Basic " +
+              btoa(
+                process.env.BROWSER_USER + ":" + process.env.BROWSER_PASSWORD
+              ),
+          },
+          body: JSON.stringify(report),
+        })
+          .then((response) => {
+            if (response.status != 201) {
+              console.error("Error:", response);
+            }
+            return true;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
       }
     })
     .then((res) => {
