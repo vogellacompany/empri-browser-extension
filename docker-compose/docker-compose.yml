@@ -16,7 +16,7 @@ services:
     restart: always
     # Forward the exposed port 5555 on the container to localhost on port 5005 on the host machine
     ports:
-      - "127.0.0.1:5005:5555"
+      - "127.0.0.1:${PSQL_HOST_PORT}:5555"
     networks:
       - backend
     # This service depends on postgres. Start that first.
