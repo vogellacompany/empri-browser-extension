@@ -42,6 +42,7 @@
     }
   ],
   "permissions": [
+    "clipboardWrite",
     "storage"
   ],
   "browser_specific_settings": {
