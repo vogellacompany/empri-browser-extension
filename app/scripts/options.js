@@ -7,6 +7,7 @@ import { clearStudyData, initStudy } from "./study.js";
   let studyOptIn = document.querySelector("#study-optin");
 
   function saveOptions(e) {
+    console.assert(!studyOptIn.checked || msu.value == "year");
     browser.storage.sync.set({
       mostsigunit: msu.value,
       studyOptIn: studyOptIn.checked,
@@ -25,6 +26,9 @@ import { clearStudyData, initStudy } from "./study.js";
           msu.value = res.mostsigunit;
         }
         studyOptIn.checked = res.studyOptIn;
+        if (res.studyOptIn) {
+          disableMsuSelection();
+        }
       })
       .then(() => updateExampleField());
   }
@@ -51,6 +55,18 @@ import { clearStudyData, initStudy } from "./study.js";
     exampleField.value = v;
   }
 
+  function disableMsuSelection() {
+    msu.value = "year";
+    msu.disabled = true;
+    msu.title = "Study participation requires Year precision.";
+    updateExampleField();
+  }
+
+  function enableMsuSelection() {
+    msu.disabled = false;
+    msu.title = "";
+  }
+
   document.addEventListener("DOMContentLoaded", restoreOptions);
   document.querySelector("form").addEventListener("submit", saveOptions);
   document.querySelector("form").addEventListener("submit", function() {window.close();});
@@ -58,7 +74,10 @@ import { clearStudyData, initStudy } from "./study.js";
   document.querySelector("#study-optin").addEventListener("change", function() {
     clearStudyData();
     if (this.checked) {
+      disableMsuSelection();
       initStudy();
+    } else {
+      enableMsuSelection();
     }
   });
 })();
