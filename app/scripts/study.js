@@ -72,39 +72,50 @@ function generateParticipantId() {
 // - set opt-in date
 export function initStudy() {
   console.log("Init Study");
-  browser.storage.local
-    .get([
-      "studyParticipantId",
-      "studyOptInDate",
-    ])
-    .then((res) => {
-      if (res.studyParticipantId === undefined) {
-        let partId = generateParticipantId();
-        console.log(`New participant id: ${partId}`);
-        browser.storage.local.set({
+  return browser.storage.local.get([
+    "studyParticipantId",
+    "studyOptInDate",
+  ])
+  .then((res) => {
+    let partId = res.studyParticipantId;
+    let optInDate = res.studyOptInDate;
+    let dirty = false;
+
+    if (partId === undefined) {
+      partId = generateParticipantId();
+      console.log(`New participant id: ${partId}`);
+      dirty = true;
+    }
+    if (res.studyOptInDate === undefined) {
+      optInDate = DateTime.utc().toFormat("yyyy-MM-dd");
+      console.log(`New opt-in date: ${optInDate}`);
+      dirty = true;
+    }
+
+    if (dirty) {
+      return browser.storage.local.set({
           studyParticipantId: partId,
-        });
-      }
-      if (res.studyOptInDate === undefined) {
-        let optInDate = DateTime.utc().toFormat("yyyy-MM-dd");
-        console.log(`New opt-in date: ${optInDate}`);
-        browser.storage.local.set({
           studyOptInDate: optInDate,
-        });
-      }
-    });
+      });
+    }
+  })
+  .catch((error) => console.error(error));
 }
 
 export function clearStudyData() {
-  browser.storage.local.remove("msuChoices");
-  browser.storage.local.remove("studyLastReport");
-  browser.storage.local.remove("studyParticipantId");
-  browser.storage.local.remove("studyOptInDate");
+  return browser.storage.local.remove([
+    "msuChoices",
+    "studyLastReport",
+    "studyParticipantId",
+    "studyOptInDate",
+  ])
+  .catch((error) => console.error(error));
 }
 
 export function resetStudyData() {
-  clearStudyData();
-  initStudy();
+  clearStudyData()
+  .then(() => initStudy())
+  .catch((error) => console.error(error));
 }
 
 export function calcDaysSince(date, reference) {

@@ -72,12 +72,15 @@ import { clearStudyData, initStudy } from "./study.js";
   document.querySelector("form").addEventListener("submit", function() {window.close();});
   document.querySelector("#mostsigunit").addEventListener("change", updateExampleField);
   document.querySelector("#study-optin").addEventListener("change", function() {
-    clearStudyData();
-    if (this.checked) {
-      disableMsuSelection();
-      initStudy();
-    } else {
-      enableMsuSelection();
-    }
+    clearStudyData()
+    .then(() => {
+      if (this.checked) {
+        disableMsuSelection();
+        return initStudy();
+      } else {
+        enableMsuSelection();
+      }
+    })
+    .catch(error => console.error(error));
   });
 })();
