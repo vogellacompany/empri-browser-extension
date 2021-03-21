@@ -35,15 +35,4 @@ export class RunningStats {
   get std() {
     return Math.sqrt(this.variance)
   }
-
-  values(includeCount = true) {
-    let vals = {
-      mean: this.mean,
-      variance: this.variance,
-    }
-    if (includeCount) {
-      vals.count = this.count
-    }
-    return vals
-  }
 }
