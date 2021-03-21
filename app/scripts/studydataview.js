@@ -1,4 +1,4 @@
-import { calcDaysSince, resetStudyData, MsuChoiceRecord } from "./study.js";
+import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./study.js";
 
 (() => {
   let placeholder = document.querySelector("#placeholder");
@@ -65,7 +65,18 @@ import { calcDaysSince, resetStudyData, MsuChoiceRecord } from "./study.js";
     msuTable.appendChild(row);
   }
 
-
   document.addEventListener("DOMContentLoaded", loadStudyData);
   document.querySelector("#studypurge").addEventListener("click", resetStudyData);
+  document.querySelector("#clipcopy").addEventListener("click", (event) => {
+    buildReport(0)
+    .then((report) => {
+      if (report) {
+        return navigator.clipboard.writeText(JSON.stringify(report));
+      }
+    })
+    .then(() => {
+      console.log("Successfully copied to clipboard");
+    })
+    .catch((error) => console.error(error));
+  });
 })();
