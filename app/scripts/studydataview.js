@@ -17,10 +17,10 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
       if (res.studyLastReport) {
         lastReportCell.innerHTML = res.studyLastReport;
       }
-      let msuChoices = res.msuChoices.map(MsuChoiceRecord.from);
-      if (msuChoices === undefined) {
+      if (res.msuChoices === undefined) {
         return;  // load nothing
       }
+      let msuChoices = res.msuChoices.map(MsuChoiceRecord.from);
       placeholder.remove();
       msuChoices.forEach(addMsuChoiceRows);
     })
