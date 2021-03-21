@@ -36,8 +36,14 @@ export class MsuChoiceRecord {
       mostSignificantUnit: this.mostSignificantUnit,
       frequency: this.frequency
     };
-    if (this.distanceStats.count > 0) { // timestamp has siblings (and distances)
-      report.distanceStats = this.distanceStats.values(false);
+    // include distance stats if
+    // - timestamp has siblings (and distances), and
+    // - timestamp has been unredacted more than once (to report a stddev)
+    if (this.distanceStats.count > 1) {
+      report.distanceStats = {
+        mean: Math.round(this.distanceStats.mean),
+        stddev: Math.round(this.distanceStats.std),
+      };
     }
     return report;
   }
@@ -194,6 +200,7 @@ export function sendReport() {
   })
   .then((report) => {
     if (report && report.entries.length > 0) {
+      console.log("Try to send report...");
       console.log(report);
       return fetch(API_URL + "/data_point", {
         method: "POST",
