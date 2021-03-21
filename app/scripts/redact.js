@@ -293,7 +293,7 @@ function calcDistanceToClosestSibling(el) {
       let msu = el.dataset.mostsigunit;
       let urlType = getUrlType();
       console.log(`Unredact ${urlType} ${tsType} to ${msu} with distance ${closestSibDist}sec`);
-      browser.storage.sync.get("studyOptIn")
+      browser.storage.local.get("studyOptIn")
       .then((res) => {
         if (res.studyOptIn) {
           return updateStudyData(urlType, tsType, msu, closestSibDist);
@@ -426,7 +426,7 @@ function calcDistanceToClosestSibling(el) {
     };
 
     // - send study report if participanting and necessary
-    browser.storage.sync.get("studyOptIn")
+    browser.storage.local.get("studyOptIn")
     .then((res) => {
       if (res.studyOptIn) {
         return sendReport();

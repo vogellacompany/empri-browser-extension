@@ -26,7 +26,7 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
     })
     .catch(error => console.error(error));
 
-    browser.storage.sync.get([
+    browser.storage.local.get([
       "studyParticipantId",
       "studyOptInDate",
     ])

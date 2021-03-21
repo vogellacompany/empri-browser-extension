@@ -72,23 +72,23 @@ function generateParticipantId() {
 // - set opt-in date
 export function initStudy() {
   console.log("Init Study");
-  browser.storage.sync
+  browser.storage.local
     .get([
       "studyParticipantId",
-      "studyOptInDate", // FIXME if optIn is handled locally per client, this should too
+      "studyOptInDate",
     ])
     .then((res) => {
       if (res.studyParticipantId === undefined) {
         let partId = generateParticipantId();
         console.log(`New participant id: ${partId}`);
-        browser.storage.sync.set({
+        browser.storage.local.set({
           studyParticipantId: partId,
         });
       }
       if (res.studyOptInDate === undefined) {
         let optInDate = DateTime.utc().toFormat("yyyy-MM-dd");
         console.log(`New opt-in date: ${optInDate}`);
-        browser.storage.sync.set({
+        browser.storage.local.set({
           studyOptInDate: optInDate,
         });
       }
@@ -98,8 +98,8 @@ export function initStudy() {
 export function clearStudyData() {
   browser.storage.local.remove("msuChoices");
   browser.storage.local.remove("studyLastReport");
-  browser.storage.sync.remove("studyParticipantId");
-  browser.storage.sync.remove("studyOptInDate");
+  browser.storage.local.remove("studyParticipantId");
+  browser.storage.local.remove("studyOptInDate");
 }
 
 export function resetStudyData() {
@@ -120,23 +120,20 @@ export function calcDaysSince(date, reference) {
 
 export function updateStudyData(urlType, tsType, msu, distance) {
   // increment counter in local storage area
-  return Promise.all([
-    browser.storage.local.get("msuChoices"),
-    browser.storage.sync.get("studyOptInDate"), // to calc daysSince
+  return browser.storage.local.get([
+    "msuChoices",
+    "studyOptInDate", // to calc daysSince
   ])
-  .then((results) => {
-    let local = results[0];
-    let sync = results[1];
-
-    if (local.msuChoices === undefined) {
-      local.msuChoices = [];
+  .then((res) => {
+    if (res.msuChoices === undefined) {
+      res.msuChoices = [];
     }
 
-    let daysSince = calcDaysSince(sync.studyOptInDate);
+    let daysSince = calcDaysSince(res.studyOptInDate);
     let newChoice = new MsuChoiceRecord(daysSince, urlType, tsType, msu);
 
     // reuse existing matching choice or add new one
-    let msuChoices = Array.from(local.msuChoices, MsuChoiceRecord.from);
+    let msuChoices = Array.from(res.msuChoices, MsuChoiceRecord.from);
     let matchingRecord = msuChoices.find(newChoice.matches, newChoice);
     if (matchingRecord === undefined) {
       msuChoices.push(newChoice);
@@ -153,13 +150,13 @@ export function updateStudyData(urlType, tsType, msu, distance) {
 }
 
 export function buildReport(firstDay = 0) {
-  return Promise.all([
-    browser.storage.local.get("msuChoices"),
-    browser.storage.sync.get("studyParticipantId"),
+  return browser.storage.local.get([
+    "msuChoices",
+    "studyParticipantId",
   ])
-  .then((results) => {
-    let msuChoices = results[0].msuChoices;
-    let partID = results[1].studyParticipantId;
+  .then((result) => {
+    let msuChoices = result.msuChoices;
+    let partID = result.studyParticipantId;
     let report = {participantIdentifier: partID};
 
     if (msuChoices === undefined) {
@@ -177,13 +174,13 @@ export function buildReport(firstDay = 0) {
 }
 
 export function sendReport() {
-  return Promise.all([
-    browser.storage.local.get("studyLastReport"),
-    browser.storage.sync.get("studyOptInDate"),
+  return browser.storage.local.get([
+    "studyLastReport",
+    "studyOptInDate",
   ])
-  .then((results) => {
-    let lastReport = results[0].studyLastReport;
-    let optInDate = results[1].studyOptInDate;
+  .then((result) => {
+    let lastReport = result.studyLastReport;
+    let optInDate = result.studyOptInDate;
     let startDay;
 
     if (lastReport === undefined) {
