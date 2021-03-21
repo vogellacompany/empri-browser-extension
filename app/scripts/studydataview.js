@@ -1,6 +1,7 @@
 import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./study.js";
 
 (() => {
+  let optin = document.querySelector("#optIn");
   let placeholder = document.querySelector("#placeholder");
   let msuTable = placeholder.parentElement;
   let partIdCell = document.querySelector("#participantId");
@@ -9,34 +10,30 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
   let lastReportCell = document.querySelector("#lastReport");
 
   function loadStudyData() {
-    browser.storage.local.get([
+    return browser.storage.local.get([
       "msuChoices",
       "studyLastReport",
-    ])
-    .then((res) => {
-      if (res.studyLastReport) {
-        lastReportCell.innerHTML = res.studyLastReport;
-      }
-      if (res.msuChoices === undefined) {
-        return;  // load nothing
-      }
-      let msuChoices = res.msuChoices.map(MsuChoiceRecord.from);
-      placeholder.remove();
-      msuChoices.forEach(addMsuChoiceRows);
-    })
-    .catch(error => console.error(error));
-
-    browser.storage.local.get([
+      "studyOptIn",
       "studyParticipantId",
       "studyOptInDate",
     ])
     .then((res) => {
+      optin.innerHTML = res.studyOptIn ? "yes" : "no";
       if (res.studyParticipantId) {
         partIdCell.innerHTML = res.studyParticipantId;
       }
       if (res.studyOptInDate) {
         optInDateCell.innerHTML = res.studyOptInDate;
         daysSinceCell.innerHTML = calcDaysSince(res.studyOptInDate);
+      }
+      if (res.studyLastReport) {
+        lastReportCell.innerHTML = res.studyLastReport;
+      }
+
+      if (res.msuChoices !== undefined) {
+        let msuChoices = res.msuChoices.map(MsuChoiceRecord.from);
+        placeholder.remove();
+        msuChoices.forEach(addMsuChoiceRows);
       }
     })
     .catch(error => console.error(error));

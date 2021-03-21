@@ -8,29 +8,32 @@ import { clearStudyData, initStudy } from "./study.js";
 
   function saveOptions(e) {
     console.assert(!studyOptIn.checked || msu.value == "year");
-    browser.storage.sync.set({
-      mostsigunit: msu.value,
-      studyOptIn: studyOptIn.checked,
-    });
+    browser.storage.sync.set({ mostsigunit: msu.value })
+    .catch(error => console.error(error));
+    browser.storage.local.set({ studyOptIn: studyOptIn.checked })
+    .catch(error => console.error(error));
     e.preventDefault();
   }
 
   function restoreOptions() {
-    browser.storage.sync
-      .get([
-        "mostsigunit",
-        "studyOptIn",
-      ])
-      .then((res) => {
-        if (res.mostsigunit) {
-          msu.value = res.mostsigunit;
-        }
-        studyOptIn.checked = res.studyOptIn;
-        if (res.studyOptIn) {
-          disableMsuSelection();
-        }
-      })
-      .then(() => updateExampleField());
+    return Promise.all([
+      browser.storage.sync.get("mostsigunit"),
+      browser.storage.local.get("studyOptIn"),
+    ])
+    .then((results) => {
+      let msuval = results[0].mostsigunit;
+      let optin = results[1].studyOptIn;
+
+      if (msuval) {
+        msu.value = msuval;
+      }
+      studyOptIn.checked = optin;
+      if (optin) {
+        disableMsuSelection();
+      }
+    })
+    .then(() => updateExampleField())
+    .catch(error => console.error(error));
   }
 
   function updateExampleField() {
