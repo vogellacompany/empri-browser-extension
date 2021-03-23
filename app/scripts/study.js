@@ -208,7 +208,7 @@ export function sendReport() {
       // Example: optIn 03/21, lastReport 03/23 => startDay=2
       startDay = calcDaysSince(lastReport, optInDate);
     }
-    // Report until but not excluding today's data
+    // Report until but not including today's data
     let todaysDaysSince = calcDaysSince(optInDate);
     return buildReport(startDay, todaysDaysSince);
   })
