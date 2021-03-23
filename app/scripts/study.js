@@ -210,7 +210,7 @@ export function sendReport() {
     if (report && report.entries.length > 0) {
       console.log("Try to send report...");
       console.log(report);
-      return fetch(API_URL + "/data_point", {
+      return fetch(API_URL + "/v1/data_point", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
