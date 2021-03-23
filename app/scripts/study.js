@@ -160,7 +160,7 @@ export function updateStudyData(urlType, tsType, msu, distance) {
   .catch((error) => console.error(error));
 }
 
-export function buildReport(firstDay = 0) {
+export function buildReport(firstDay = 0, untilDay = Infinity) {
   return browser.storage.local.get([
     "msuChoices",
     "studyParticipantId",
@@ -176,7 +176,7 @@ export function buildReport(firstDay = 0) {
 
     // filter out entries before firstDay
     let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
-    let newEntries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay);
+    let newEntries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay && e.daysSinceOptIn < untilDay);
     report.entries = newEntries.map((e) => e.toReportFormat());
 
     return report;
@@ -185,8 +185,10 @@ export function buildReport(firstDay = 0) {
 }
 
 export function sendReport() {
+  // Report all data starting from the day of the last report
+  // until but not including today's data.
   return browser.storage.local.get([
-    "studyLastReport",
+    "studyLastReport", // data up to but not inclding this day has been sent
     "studyOptInDate",
   ])
   .then((result) => {
@@ -202,9 +204,13 @@ export function sendReport() {
         // already sent a report today – do nothing
         return;
       }
+      // Start report from the day last report occurred
+      // Example: optIn 03/21, lastReport 03/23 => startDay=2
       startDay = calcDaysSince(lastReport, optInDate);
     }
-    return buildReport(startDay);
+    // Report until but not excluding today's data
+    let todaysDaysSince = calcDaysSince(optInDate);
+    return buildReport(startDay, todaysDaysSince);
   })
   .then((report) => {
     if (report && report.entries.length > 0) {
