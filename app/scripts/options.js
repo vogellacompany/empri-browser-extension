@@ -6,13 +6,13 @@ import { clearStudyData, initStudy } from "./study.js";
   let exampleField = document.querySelector("#example");
   let studyOptIn = document.querySelector("#study-optin");
 
-  function saveOptions(e) {
+  function saveOptions() {
     console.assert(!studyOptIn.checked || msu.value == "year");
-    browser.storage.sync.set({ mostsigunit: msu.value })
+    return browser.storage.sync.set({ mostsigunit: msu.value })
+    .then(() => {
+      return browser.storage.local.set({ studyOptIn: studyOptIn.checked });
+    })
     .catch(error => console.error(error));
-    browser.storage.local.set({ studyOptIn: studyOptIn.checked })
-    .catch(error => console.error(error));
-    e.preventDefault();
   }
 
   function restoreOptions() {
@@ -71,9 +71,13 @@ import { clearStudyData, initStudy } from "./study.js";
   }
 
   document.addEventListener("DOMContentLoaded", restoreOptions);
-  document.querySelector("form").addEventListener("submit", saveOptions);
-  document.querySelector("form").addEventListener("submit", function() {window.close();});
-  document.querySelector("#mostsigunit").addEventListener("change", updateExampleField);
+  document.querySelector("#mostsigunit").addEventListener("change", function () {
+    saveOptions()
+    .then(() => {
+      updateExampleField();
+    })
+    .catch(error => console.error(error));
+  });
   document.querySelector("#study-optin").addEventListener("change", function() {
     clearStudyData()
     .then(() => {
@@ -83,6 +87,9 @@ import { clearStudyData, initStudy } from "./study.js";
       } else {
         enableMsuSelection();
       }
+    })
+    .then(() => {
+      return saveOptions();
     })
     .catch(error => console.error(error));
   });
