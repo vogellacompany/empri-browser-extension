@@ -1,3 +1,7 @@
+.content {
+  margin: 4px;
+}
+
 /* Style inputs */
 input[type=datetime-local], select {
   width: 100%;
