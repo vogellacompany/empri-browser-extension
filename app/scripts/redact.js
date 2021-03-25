@@ -240,12 +240,10 @@ function calcDistanceToClosestSibling(el) {
     }
     function redact2globalpref(el) {
       browser.storage.sync.get(["mostsigunit"]).then((res) => {
-        // remember original datetime for selective controls
-        el.dataset.dtoriginally = el.getAttribute("datetime");
         // apply redaction
         let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
         let msu = res.mostsigunit;
-        dateTime = redact(el, dateTime, msu);
+        dateTime = initialRedact(el, dateTime, msu);
         el.setAttribute("datetime", dateTime.toISO());
 
         // - make el the dropdown button
@@ -273,9 +271,18 @@ function calcDistanceToClosestSibling(el) {
           // nothing to redact if seconds are wanted
           break;
       }
-      el.dataset.redacted = true; // flag to avoid repeated redactions
       el.dataset.mostsigunit = mostsigunit; // remember redaction level
       return dateTime;
+    }
+    function initialRedact(el, dateTime, mostsigunit) {
+      if (el.dataset.redacted) {
+        // run only once to avoid overwriting dtoriginally
+        return dateTime;
+      }
+      let newDateTime = redact(el, dateTime, mostsigunit);
+      el.dataset.redacted = true; // set flag to avoid repeated redactions
+      el.dataset.dtoriginally = dateTime.toISO(); // preserve original date for unredaction
+      return newDateTime;
     }
     function unredact(el, mostsigunit = Timeunit.Second) {
       let dateTime = redact(
@@ -341,9 +348,8 @@ function calcDistanceToClosestSibling(el) {
         // "Commits on Jul 12, 2020".substring(11) -> "Jul 12, 2020"
         let text = el.textContent.substring(11);
         let dateTime = DateTime.fromFormat(text, "MMM d, y");
-        el.dataset.dtoriginally = dateTime;
         var msu = res.mostsigunit;
-        dateTime = redact(el, dateTime, msu);
+        dateTime = initialRedact(el, dateTime, msu);
         el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
       });
     }
