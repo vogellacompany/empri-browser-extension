@@ -328,7 +328,7 @@ function calcDistanceToClosestSibling(el) {
     }
 
     function redactTimestamps() {
-      document.querySelectorAll("time-ago, relative-time").forEach((el) => {
+      document.querySelectorAll("time-ago:not([data-redacted]), relative-time:not([data-redacted])").forEach((el) => {
         redact2globalpref(el);
       });
     }
@@ -355,9 +355,11 @@ function calcDistanceToClosestSibling(el) {
         ".TimelineItem-body > .f5"
       );
       await Promise.all(
-        Array.from(timelineTimestamps).map((el) => {
-          return redactTimelineItem(el);
-        })
+        Array.from(timelineTimestamps)
+             .filter(el => !el.dataset.redacted)
+             .map((el) => {
+               return redactTimelineItem(el);
+             })
       );
 
       for (let i = 0; i < timelineTimestamps.length; i++) {
