@@ -234,6 +234,10 @@ function calcDistanceToClosestSibling(el) {
       event.preventDefault();
       event.stopPropagation();
     }
+    function addTsClickHandler(el) {
+      el.addEventListener("click", tsClickHandler);
+      el.setAttribute("role", "button");
+    }
     function redact2globalpref(el) {
       browser.storage.sync.get(["mostsigunit"]).then((res) => {
         // remember original datetime for selective controls
@@ -247,7 +251,7 @@ function calcDistanceToClosestSibling(el) {
         // - make el the dropdown button
         el.classList.add("dropbtn");
         // - set popup trigger
-        el.addEventListener("click", tsClickHandler);
+        addTsClickHandler(el);
       });
     }
     function redact(el, dateTime, mostsigunit) {
