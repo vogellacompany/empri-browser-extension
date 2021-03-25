@@ -8,20 +8,3 @@ input[type=datetime-local], select {
   border-radius: 4px;
   box-sizing: border-box;
 }
-
-/* Style the submit button */
-input[type=submit] {
-  width: 100%;
-  background-color: #4CAF50;
-  color: black;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Add a background color to the submit button on mouse-over */
-input[type=submit]:hover {
-  background-color: #45a049;
-}
