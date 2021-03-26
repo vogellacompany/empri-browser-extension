@@ -254,8 +254,8 @@ function calcDistanceToClosestSibling(el) {
     }
     function tsNeedsProcessing(el) {
       return (
-        el.dataset.dtoriginally == undefined ||
-        el.listeners == undefined
+        el.dataset.dtoriginally === undefined
+        || el.listeners === undefined
       );
     }
     function redact(el, dateTime, mostsigunit) {
@@ -411,7 +411,8 @@ function calcDistanceToClosestSibling(el) {
         let node = mutation.target;
         if (
           (node.nodeName === "TIME-AGO" || node.nodeName === "RELATIVE-TIME") &&
-          tsNeedsProcessing(node)
+          !node.dataset.dtoriginally
+          // Warning: Checking for tsNeedsProcessing(node) will cause Firefox to hang somehow
         ) {
           redact2globalpref(node);
         }
