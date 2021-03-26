@@ -252,6 +252,12 @@ function calcDistanceToClosestSibling(el) {
         addTsClickHandler(el);
       });
     }
+    function tsNeedsProcessing(el) {
+      return (
+        el.dataset.dtoriginally == undefined ||
+        el.listeners == undefined
+      );
+    }
     function redact(el, dateTime, mostsigunit) {
       // redact precision to the most significant unit
       switch (
@@ -275,12 +281,11 @@ function calcDistanceToClosestSibling(el) {
       return dateTime;
     }
     function initialRedact(el, dateTime, mostsigunit) {
-      if (el.dataset.redacted) {
+      if (el.dataset.dtoriginally) {
         // run only once to avoid overwriting dtoriginally
         return dateTime;
       }
       let newDateTime = redact(el, dateTime, mostsigunit);
-      el.dataset.redacted = true; // set flag to avoid repeated redactions
       el.dataset.dtoriginally = dateTime.toISO(); // preserve original date for unredaction
       return newDateTime;
     }
@@ -336,6 +341,7 @@ function calcDistanceToClosestSibling(el) {
 
     function redactTimestamps() {
       document.querySelectorAll("time-ago, relative-time").forEach((el) => {
+        if (!tsNeedsProcessing(el)) return;
         redact2globalpref(el);
       });
     }
@@ -405,7 +411,7 @@ function calcDistanceToClosestSibling(el) {
         let node = mutation.target;
         if (
           (node.nodeName === "TIME-AGO" || node.nodeName === "RELATIVE-TIME") &&
-          !node.dataset.redacted
+          tsNeedsProcessing(node)
         ) {
           redact2globalpref(node);
         }
