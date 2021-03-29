@@ -4,6 +4,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../styles/options.css"/>
+    <link rel="stylesheet" href="../styles/modal.css"/>
   </head>
 
   <body>
@@ -24,6 +25,19 @@
         <input name="study-optin" id="study-optin" type="checkbox">
         <a href="studydataview.html" target="_blank">Show data</a>
       </form>
+      <!-- The Modal -->
+      <div id="datapurgemodal" class="modal">
+        <div class="modal-content">
+          <p>
+            Opting out will delete the study data from your browser.
+            If you want to keep them you should
+            <a href="studydataview.html" target="_blank">make a copy</a>
+            before continuing.
+          </p>
+          <span id="purgeCont" class="button btn-red" role="button">Delete data and opt-out</span>
+          <span id="purgeAbort" class="button btn-gray" role="button">Opt-out later</span>
+        </div>
+      </div>
     </div>
     <!-- TODO(FAP): show unsaved changes (dirty state) and give feedback on save action? -->
     <script src="../scripts/options.js"></script>

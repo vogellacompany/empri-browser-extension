@@ -5,6 +5,7 @@ import { clearStudyData, initStudy } from "./study.js";
   let msu = document.querySelector("#mostsigunit");
   let exampleField = document.querySelector("#example");
   let studyOptIn = document.querySelector("#study-optin");
+  let purgeModal = document.querySelector("#datapurgemodal");
 
   function saveOptions() {
     console.assert(!studyOptIn.checked || msu.value == "year");
@@ -70,6 +71,11 @@ import { clearStudyData, initStudy } from "./study.js";
     msu.title = "";
   }
 
+  function abortOptOut() {
+    purgeModal.style.display = "none";
+    studyOptIn.checked = true;
+  }
+
   document.addEventListener("DOMContentLoaded", restoreOptions);
   document.querySelector("#mostsigunit").addEventListener("change", function () {
     saveOptions()
@@ -79,18 +85,37 @@ import { clearStudyData, initStudy } from "./study.js";
     .catch(error => console.error(error));
   });
   document.querySelector("#study-optin").addEventListener("change", function() {
-    clearStudyData()
-    .then(() => {
-      if (this.checked) {
+    if (this.checked) {
+      // opting in
+      clearStudyData()
+      .then(() => {
         disableMsuSelection();
         return initStudy();
-      } else {
-        enableMsuSelection();
-      }
-    })
+      })
+      .then(() => {
+        return saveOptions();
+      })
+      .catch(error => console.error(error));
+    } else {
+      // opting out
+      purgeModal.style.display = "block";
+    }
+  });
+  document.querySelector("#purgeAbort").addEventListener("click", abortOptOut);
+  document.querySelector("#purgeCont").addEventListener("click", function() {
+    // purge data
+    purgeModal.style.display = "none";
+    clearStudyData()
     .then(() => {
+      enableMsuSelection();
       return saveOptions();
     })
     .catch(error => console.error(error));
+  });
+  // When the user clicks anywhere outside of the modal, close it
+  window.addEventListener("click", function(event) {
+    if (event.target == purgeModal) {
+      abortOptOut();
+    }
   });
 })();
