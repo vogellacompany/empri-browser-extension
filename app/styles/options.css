@@ -2,6 +2,30 @@
   margin: 4px;
 }
 
+.button {
+  padding: 4px;
+}
+.button:hover,
+.button:focus {
+  cursor: pointer;
+}
+.btn-red {
+  background-color: #cf2e2e;
+  color: white;
+}
+.btn-red:hover {
+  background: #902020;
+  color: white;
+}
+.btn-gray {
+  background-color: #eee;
+  color: black;
+}
+.btn-gray:hover {
+  background: #ddd;
+  color: black;
+}
+
 /* Style inputs */
 input[type=datetime-local], select {
   width: 100%;
