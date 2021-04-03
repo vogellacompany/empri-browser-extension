@@ -21,6 +21,10 @@
   width: 80%; /* Could be more or less, depending on screen size */
 }
 
+.modal-content > span[role="button"] + span[role="button"] {
+  margin-left: .5em;
+}
+
 /* The Close Button */
 .close {
   color: #aaa;
