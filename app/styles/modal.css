@@ -35,3 +35,9 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background-color: #202023;
+  }
+}
