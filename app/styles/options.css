@@ -38,12 +38,16 @@ input[type=datetime-local], select {
 }
 
 @media (prefers-color-scheme: dark) {
-    body {
-        color: #fffff8;
-        background-color: #202023;
-    }
+  body {
+    color: #fffff8;
+    background-color: #202023;
+    position: relative;
+    right: 0;
+    top: 0;
+    height: 100%;
+  }
 
-    a {
-        color: #45A1FF;
-    }
+  a {
+    color: #45A1FF;
+  }
 }
