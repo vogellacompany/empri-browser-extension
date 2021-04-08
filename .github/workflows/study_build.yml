@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [ 'chrome', 'firefox', 'opera', 'edge' ]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 10.x
@@ -19,8 +16,23 @@ jobs:
           node-version: '10.x'
       - name: Yarn install
         run: yarn install
-      - name: Build for ${{ matrix.browser}}
-        run: yarn run build ${{ matrix.browser }}
+      - name: Build for chrome
+        run: yarn run build chrome
+        env:
+          BROWSER_USER: ${{ secrets.BROWSER_USER }}
+          BROWSER_PASSWORD: ${{ secrets.BROWSER_PASSWORD }}
+      - name: Build for firefox
+        run: yarn run build firefox
+        env:
+          BROWSER_USER: ${{ secrets.BROWSER_USER }}
+          BROWSER_PASSWORD: ${{ secrets.BROWSER_PASSWORD }}
+      - name: Build for opera
+        run: yarn run build opera
+        env:
+          BROWSER_USER: ${{ secrets.BROWSER_USER }}
+          BROWSER_PASSWORD: ${{ secrets.BROWSER_PASSWORD }}
+      - name: Build for edge
+        run: yarn run build edge
         env:
           BROWSER_USER: ${{ secrets.BROWSER_USER }}
           BROWSER_PASSWORD: ${{ secrets.BROWSER_PASSWORD }}
