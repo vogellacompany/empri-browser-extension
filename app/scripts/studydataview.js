@@ -18,16 +18,16 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
       "studyOptInDate",
     ])
     .then((res) => {
-      optin.innerHTML = res.studyOptIn ? "yes" : "no";
+      optin.textContent = res.studyOptIn ? "yes" : "no";
       if (res.studyParticipantId) {
-        partIdCell.innerHTML = res.studyParticipantId;
+        partIdCell.textContent = res.studyParticipantId;
       }
       if (res.studyOptInDate) {
-        optInDateCell.innerHTML = res.studyOptInDate;
-        daysSinceCell.innerHTML = calcDaysSince(res.studyOptInDate);
+        optInDateCell.textContent = res.studyOptInDate;
+        daysSinceCell.textContent = calcDaysSince(res.studyOptInDate);
       }
       if (res.studyLastReport) {
-        lastReportCell.innerHTML = res.studyLastReport;
+        lastReportCell.textContent = res.studyLastReport;
       }
 
       if (res.msuChoices !== undefined) {
@@ -42,22 +42,22 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
   function addMsuChoiceRows(record) {
     var row = document.createElement("tr");
     var urlCol = document.createElement("td");
-    urlCol.innerHTML = record.url;
+    urlCol.textContent = record.url;
     row.appendChild(urlCol);
     var tsCol = document.createElement("td");
-    tsCol.innerHTML = record.xpath;
+    tsCol.textContent = record.xpath;
     row.appendChild(tsCol);
     var msuCol = document.createElement("td");
-    msuCol.innerHTML = record.mostSignificantUnit;
+    msuCol.textContent = record.mostSignificantUnit;
     row.appendChild(msuCol);
     var daysCol = document.createElement("td");
-    daysCol.innerHTML = record.daysSinceOptIn;
+    daysCol.textContent = record.daysSinceOptIn;
     row.appendChild(daysCol);
     var distMeanCol = document.createElement("td");
-    distMeanCol.innerHTML = record.distanceStats.mean;
+    distMeanCol.textContent = record.distanceStats.mean;
     row.appendChild(distMeanCol);
     var freqCol = document.createElement("td");
-    freqCol.innerHTML = record.frequency;
+    freqCol.textContent = record.frequency;
     row.appendChild(freqCol);
     msuTable.appendChild(row);
   }

@@ -106,7 +106,7 @@ function calcDistanceToClosestSibling(el) {
         ddwrapper.appendChild(ts);
         if (twoClickNote) {
           var note = document.createElement("span");
-          note.innerHTML = "Click again to follow link";
+          note.textContent = "Click again to follow link";
           note.classList.add("popuptext");
           note.classList.add("show");
           ddwrapper.appendChild(note);
@@ -124,27 +124,27 @@ function calcDistanceToClosestSibling(el) {
         var dateprev = document.createElement("span");
         dateprev.id = "dateprev";
         let dateTime = DateTime.fromISO(ts.getAttribute("datetime"));
-        dateprev.innerHTML = dateTime.toFormat(dateprevFormat);
+        dateprev.textContent = dateTime.toFormat(dateprevFormat);
         dateprev.classList.add("datebox");
         ddcontent.appendChild(dateprev);
         // Enhance button – increase msu by one
         var enhancebtn = document.createElement("button");
         enhancebtn.id = "enhance";
-        enhancebtn.innerHTML = "+";
+        enhancebtn.textContent = "+";
         enhancebtn.addEventListener("click", function () {
           increaseMsu(ts);
         });
         ddcontent.appendChild(enhancebtn);
         // Ok/close button – dummy button to close the popup
         var okbtn = document.createElement("button");
-        okbtn.innerHTML = "✓";
+        okbtn.textContent = "✓";
         okbtn.addEventListener("click", function () {
           saveAndRemovePopup(ts);
         });
         ddcontent.appendChild(okbtn);
         // Info Text
         var info = document.createElement("p");
-        info.innerHTML = "Select date precision";
+        info.textContent = "Select date precision";
         ddcontent.appendChild(info);
         // add msu quick-selectors/indicators
         function addMsuSel(msu, displayText) {
@@ -155,7 +155,7 @@ function calcDistanceToClosestSibling(el) {
             ts.dataset.msuChanged = true;
             saveAndRemovePopup(ts);
           });
-          sel.innerHTML = displayText;
+          sel.textContent = displayText;
           ddcontent.appendChild(sel);
           return sel;
         }
@@ -190,7 +190,7 @@ function calcDistanceToClosestSibling(el) {
       unredact(el, nextMsu);
       // update dateprev
       let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
-      document.querySelector("#dateprev").innerHTML = dateTime.toFormat(
+      document.querySelector("#dateprev").textContent = dateTime.toFormat(
         dateprevFormat
       );
       setActiveMsu(el);
