@@ -1,6 +1,9 @@
 name: Study Build
 
-on: push
+on:
+  push:
+  create:
+    tags:
 # on:
 #   push:
 #     branches:
