@@ -45,11 +45,4 @@
     "clipboardWrite",
     "storage"
   ],
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "github-timestamp-privacy@empri-devops.de",
-      "strict_min_version": "79.0"
-    }
-  }
-
 }
