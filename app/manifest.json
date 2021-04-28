@@ -43,7 +43,9 @@
   ],
   "permissions": [
     "clipboardWrite",
-    "storage"
+    "storage",
+    "*://localhost/*",
+    "https://empri-devops.vogella.com/*"
   ],
   "browser_specific_settings": {
     "gecko": {
