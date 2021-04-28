@@ -236,7 +236,8 @@ export function sendReport() {
       let today = DateTime.utc().toFormat("yyyy-MM-dd");
       return browser.storage.local.set({ studyLastReport: today });
     } else if (res) { // reporting failed somehow
-      console.error("Reporting failed:", response);
+      console.error("Reporting failed:", res);
     }
-  });
+  })
+  .catch((error) => console.error(error));
 }
