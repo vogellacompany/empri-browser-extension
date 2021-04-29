@@ -92,6 +92,15 @@ function calcDistanceToClosestSibling(el) {
       Minute: "minute",
       Second: "second",
     };
+    const timeUnitToRedactionText = {
+      [Timeunit.Year]: "this year",
+      [Timeunit.Month]: "this month",
+      [Timeunit.Day]: "this day",
+      [Timeunit.Hour]: "this hour",
+      [Timeunit.Minute]: "this minute",
+      [Timeunit.Second]: "this second",
+    }
+
     function hasPopup(ts) {
       var parent = ts.parentNode;
       return parent.classList.contains("dropdown");
@@ -278,6 +287,10 @@ function calcDistanceToClosestSibling(el) {
           break;
       }
       el.dataset.mostsigunit = mostsigunit; // remember redaction level
+      let span = document.createElement("span");
+      span.textContent = timeUnitToRedactionText[mostsigunit];
+      el.parentElement.insertBefore(span, el.nextSibling);
+      el.style.display = "none";
       return dateTime;
     }
     function initialRedact(el, dateTime, mostsigunit) {
