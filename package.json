@@ -3,8 +3,8 @@
   "version": "0.2.3",
   "description": "Control precisions of timestamps shown on GitHub.",
   "scripts": {
-    "dev": "webextension-toolbox dev",
-    "build": "webextension-toolbox build"
+    "dev": "NODE_ENV=development scripts/create_manifest && webextension-toolbox dev",
+    "build": "NODE_ENV=production scripts/create_manifest && webextension-toolbox build"
   },
   "devDependencies": {
     "tape": "^5.2.2",

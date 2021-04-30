@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : "development";
+
+const fs = require('fs');
+
+try {
+  var manifestInput = fs.readFileSync('./templates/manifest.json.template', 'utf8');
+} catch (e) {
+  console.log(e.message);
+}
+
+
+if (process.env.NODE_ENV === "production") {
+  var manifestApiUrl = "https://empri-devops.vogella.com/*";
+} else if (process.env.NODE_ENV === "development") {
+  var manifestApiUrl = "*://localhost/*";
+}
+
+manifestInput = manifestInput.replace("<permissions_api_url>", manifestApiUrl);
+
+
+fs.writeFileSync('./app/manifest.json', manifestInput);
