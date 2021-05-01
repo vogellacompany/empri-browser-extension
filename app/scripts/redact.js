@@ -93,12 +93,18 @@ function calcDistanceToClosestSibling(el) {
       Second: "second",
     };
     const timeUnitToRedactionText = {
-      [Timeunit.Year]: "this year",
-      [Timeunit.Month]: "this month",
-      [Timeunit.Day]: "this day",
-      [Timeunit.Hour]: "this hour",
-      [Timeunit.Minute]: "this minute",
-      [Timeunit.Second]: "this second",
+      [Timeunit.Year]: (dateTime) => dateTime.toRelativeCalendar({ unit: "years" }),
+      [Timeunit.Month]: (dateTime) => {
+        if (dateTime.diffNow([ "months" ]).months >= -1) {
+          return dateTime.toRelativeCalendar({ unit: "months" });
+        } else {
+          return dateTime.toRelativeCalendar();
+        }
+      },
+      [Timeunit.Day]: (dateTime) => dateTime.toRelativeCalendar(),
+      [Timeunit.Hour]: (dateTime) => dateTime.toRelativeCalendar(),
+      [Timeunit.Minute]: (dateTime) => dateTime.toRelativeCalendar(),
+      [Timeunit.Second]: (dateTime) => dateTime.toRelativeCalendar(),
     }
 
     function hasPopup(ts) {
@@ -288,7 +294,7 @@ function calcDistanceToClosestSibling(el) {
       }
       el.dataset.mostsigunit = mostsigunit; // remember redaction level
       let span = document.createElement("span");
-      span.textContent = timeUnitToRedactionText[mostsigunit];
+      span.textContent = timeUnitToRedactionText[mostsigunit](dateTime);
       el.parentElement.insertBefore(span, el.nextSibling);
       el.style.display = "none";
       return dateTime;
