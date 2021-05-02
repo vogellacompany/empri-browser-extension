@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { updateStudyData, sendReport } from "./study.js";
+import { toFuzzyDate } from "./fuzzydate.js";
 
 const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -92,20 +93,6 @@ function calcDistanceToClosestSibling(el) {
       Minute: "minute",
       Second: "second",
     };
-    const timeUnitToRedactionText = {
-      [Timeunit.Year]: (dateTime) => dateTime.toRelativeCalendar({ unit: "years" }),
-      [Timeunit.Month]: (dateTime) => {
-        if (dateTime.diffNow([ "months" ]).months >= -1) {
-          return dateTime.toRelativeCalendar({ unit: "months" });
-        } else {
-          return dateTime.toRelativeCalendar();
-        }
-      },
-      [Timeunit.Day]: (dateTime) => dateTime.toRelativeCalendar(),
-      [Timeunit.Hour]: (dateTime) => dateTime.toRelativeCalendar(),
-      [Timeunit.Minute]: (dateTime) => dateTime.toRelativeCalendar(),
-      [Timeunit.Second]: (dateTime) => dateTime.toRelativeCalendar(),
-    }
 
     function hasPopup(ts) {
       var parent = ts.parentNode;
@@ -294,7 +281,7 @@ function calcDistanceToClosestSibling(el) {
       }
       el.dataset.mostsigunit = mostsigunit; // remember redaction level
       let span = document.createElement("span");
-      span.textContent = timeUnitToRedactionText[mostsigunit](dateTime.setLocale("en"));
+      span.textContent = toFuzzyDate(dateTime.setLocale("en"), mostsigunit);
       el.parentElement.insertBefore(span, el.nextSibling);
       el.style.display = "none";
       return dateTime;
