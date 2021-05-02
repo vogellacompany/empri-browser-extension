@@ -294,7 +294,7 @@ function calcDistanceToClosestSibling(el) {
       }
       el.dataset.mostsigunit = mostsigunit; // remember redaction level
       let span = document.createElement("span");
-      span.textContent = timeUnitToRedactionText[mostsigunit](dateTime);
+      span.textContent = timeUnitToRedactionText[mostsigunit](dateTime.setLocale("en"));
       el.parentElement.insertBefore(span, el.nextSibling);
       el.style.display = "none";
       return dateTime;
