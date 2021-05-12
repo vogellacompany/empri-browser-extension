@@ -247,21 +247,26 @@ function calcDistanceToClosestSibling(el) {
         let msu = res.mostsigunit;
         dateTime = initialRedact(timeEl, dateTime, msu);
         timeEl.setAttribute("datetime", dateTime.toISO());
-
-        let fuzDateEl = document.createElement("span");
-        fuzDateEl.textContent = toFuzzyDate(dateTime.setLocale("en"), msu);
-        timeEl.parentElement.insertBefore(fuzDateEl, timeEl.nextSibling);
         // - make timeEl the dropdown button
         timeEl.classList.add("dropbtn");
-        fuzDateEl.classList.add("dropbtn");
-        timeEl.classList.add("replaced");
         // - set popup trigger
         addTsClickHandler(timeEl);
-        fuzDateEl.addEventListener("click", function(event) {
-          // redirect event to time-element
-          const newEvent = new Event('click');
-          timeEl.dispatchEvent(newEvent);
-        });
+
+        let fuzDateEl
+        if (!timeEl.classList.contains("replaced")) {
+          fuzDateEl = document.createElement("span");
+          fuzDateEl.classList.add("dropbtn");
+          timeEl.parentElement.insertBefore(fuzDateEl, timeEl.nextSibling);
+          fuzDateEl.addEventListener("click", function(event) {
+            // redirect event to time-element
+            const newEvent = new Event('click');
+            timeEl.dispatchEvent(newEvent);
+          });
+          timeEl.classList.add("replaced");
+        } else {
+          fuzDateEl = timeEl.nextSibling;
+        }
+        fuzDateEl.textContent = toFuzzyDate(dateTime.setLocale("en"), msu);
       });
     }
     function tsNeedsProcessing(el) {
