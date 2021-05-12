@@ -70,6 +70,10 @@
   display: block;
 }
 
+.replaced {
+  display: none;
+}
+
 
 
 /* 2-Click popup text */

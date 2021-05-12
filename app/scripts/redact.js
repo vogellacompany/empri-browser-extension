@@ -240,18 +240,28 @@ function calcDistanceToClosestSibling(el) {
       el.addEventListener("click", tsClickHandler);
       el.setAttribute("role", "button");
     }
-    function redact2globalpref(el) {
+    function redactTimeElement(timeEl) {
       browser.storage.sync.get(["mostsigunit"]).then((res) => {
         // apply redaction
-        let dateTime = DateTime.fromISO(el.getAttribute("datetime"));
+        let dateTime = DateTime.fromISO(timeEl.getAttribute("datetime"));
         let msu = res.mostsigunit;
-        dateTime = initialRedact(el, dateTime, msu);
-        el.setAttribute("datetime", dateTime.toISO());
+        dateTime = initialRedact(timeEl, dateTime, msu);
+        timeEl.setAttribute("datetime", dateTime.toISO());
 
-        // - make el the dropdown button
-        el.classList.add("dropbtn");
+        let fuzDateEl = document.createElement("span");
+        fuzDateEl.textContent = toFuzzyDate(dateTime.setLocale("en"), msu);
+        timeEl.parentElement.insertBefore(fuzDateEl, timeEl.nextSibling);
+        // - make timeEl the dropdown button
+        timeEl.classList.add("dropbtn");
+        fuzDateEl.classList.add("dropbtn");
+        timeEl.classList.add("replaced");
         // - set popup trigger
-        addTsClickHandler(el);
+        addTsClickHandler(timeEl);
+        fuzDateEl.addEventListener("click", function(event) {
+          // redirect event to time-element
+          const newEvent = new Event('click');
+          timeEl.dispatchEvent(newEvent);
+        });
       });
     }
     function tsNeedsProcessing(el) {
@@ -280,10 +290,6 @@ function calcDistanceToClosestSibling(el) {
           break;
       }
       el.dataset.mostsigunit = mostsigunit; // remember redaction level
-      let span = document.createElement("span");
-      span.textContent = toFuzzyDate(dateTime.setLocale("en"), mostsigunit);
-      el.parentElement.insertBefore(span, el.nextSibling);
-      el.style.display = "none";
       return dateTime;
     }
     function initialRedact(el, dateTime, mostsigunit) {
@@ -302,6 +308,14 @@ function calcDistanceToClosestSibling(el) {
         mostsigunit
       );
       el.setAttribute("datetime", dateTime.toISO());
+      if (el.classList.contains("replaced")) {
+        // get fuzzy date element
+        // was next sibling of time-element but with
+        // popup its now sibling of the parent div
+        const fuzDateEl = el.parentNode.nextSibling;
+        console.assert(fuzDateEl.classList.contains("dropbtn"));
+        fuzDateEl.textContent = toFuzzyDate(dateTime.setLocale("en"), mostsigunit);
+      }
     }
     function logChoice(el) {
       // log the unredaction choice of the user
@@ -348,7 +362,7 @@ function calcDistanceToClosestSibling(el) {
     function redactTimestamps() {
       document.querySelectorAll("time-ago, relative-time").forEach((el) => {
         if (!tsNeedsProcessing(el)) return;
-        redact2globalpref(el);
+        redactTimeElement(el);
       });
     }
 
@@ -420,7 +434,7 @@ function calcDistanceToClosestSibling(el) {
           !node.dataset.dtoriginally
           // Warning: Checking for tsNeedsProcessing(node) will cause Firefox to hang somehow
         ) {
-          redact2globalpref(node);
+          redactTimeElement(node);
         }
       });
     });
