@@ -7,14 +7,32 @@ const Timeunit = {
   Second: "second",
 }
 
-const absoluteFormat = {
-  [Timeunit.Year]: { year: "numeric" },
-  [Timeunit.Month]: { year: "numeric", month: "short" },
-  [Timeunit.Day]: { year: "numeric", month: "short", day: "numeric" },
-  [Timeunit.Hour]: { year: "numeric", month: "short", day: "numeric" },
-  [Timeunit.Minute]: { year: "numeric", month: "short", day: "numeric" },
-  [Timeunit.Second]: { year: "numeric", month: "short", day: "numeric" },
+
+function absoluteFormat(unit, thisYear, time=false) {
+  let format = {}
+  switch (unit) { // fall through
+    case Timeunit.Second: // treated like minute, GH never shows seconds
+    case Timeunit.Minute:
+      if (time) {
+        format.minute = "2-digit"
+      }
+    case Timeunit.Hour:
+      if (time) {
+        format.hour = "2-digit"
+        format.timeZoneName = "short"
+      }
+    case Timeunit.Day:
+      format.day = "numeric"
+    case Timeunit.Month:
+      format.month = "short"
+    case Timeunit.Year:
+      if (!thisYear || time || unit == Timeunit.Year) {
+        format.year = "numeric"
+      }
+  }
+  return format
 }
+
 
 function formatRelative(dateTime, unit) {
   switch (unit) { // fall through
@@ -45,13 +63,16 @@ function formatRelative(dateTime, unit) {
   }
 }
 
-export function toFuzzyDate(dateTime, unit, relative=true) {
+export function toFuzzyDate(dateTime, unit, relative=true, time=false, locale="en-gb") {
   let daysDiff = dateTime.diffNow("days").days
+  dateTime = dateTime.setLocale(locale)
   if (relative && Math.abs(daysDiff) < 30) {
     // use relative format
     return formatRelative(dateTime, unit)
   } else {
     // use absolute format
-    return dateTime.toLocaleString(absoluteFormat[unit])
+    let curYear = new Date().getFullYear()
+    let isThisYear = (dateTime.year == curYear)
+    return dateTime.toLocaleString(absoluteFormat(unit, isThisYear, time))
   }
 }
