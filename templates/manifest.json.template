@@ -38,7 +38,10 @@
       "css": [
         "styles/contentscript.css"
       ],
-      "js": ["scripts/redact.js"]
+      "js": [
+        "scripts/fuzzydate.js",
+        "scripts/redact.js"
+      ]
     }
   ],
   "permissions": [
