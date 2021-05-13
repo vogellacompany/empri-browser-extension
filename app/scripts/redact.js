@@ -266,6 +266,8 @@ function calcDistanceToClosestSibling(el) {
             // redirect event to time-element
             const newEvent = new Event('click');
             timeEl.dispatchEvent(newEvent);
+            event.preventDefault();
+            event.stopPropagation();
           });
           timeEl.classList.add("replaced");
         } else {
