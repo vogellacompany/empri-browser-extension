@@ -240,6 +240,10 @@ function calcDistanceToClosestSibling(el) {
       el.addEventListener("click", tsClickHandler);
       el.setAttribute("role", "button");
     }
+    function updateFuzzyDateElement(fuzEl, dateTime, msu) {
+      fuzEl.textContent = toFuzzyDate(dateTime, msu);
+      fuzEl.title = toFuzzyDate(dateTime, msu, false, true);
+    }
     function redactTimeElement(timeEl) {
       browser.storage.sync.get(["mostsigunit"]).then((res) => {
         // apply redaction
@@ -257,6 +261,7 @@ function calcDistanceToClosestSibling(el) {
           fuzDateEl = document.createElement("span");
           fuzDateEl.classList.add("dropbtn");
           timeEl.parentElement.insertBefore(fuzDateEl, timeEl.nextSibling);
+          fuzDateEl.setAttribute("role", "button");
           fuzDateEl.addEventListener("click", function(event) {
             // redirect event to time-element
             const newEvent = new Event('click');
@@ -266,7 +271,7 @@ function calcDistanceToClosestSibling(el) {
         } else {
           fuzDateEl = timeEl.nextSibling;
         }
-        fuzDateEl.textContent = toFuzzyDate(dateTime.setLocale("en"), msu);
+        updateFuzzyDateElement(fuzDateEl, dateTime, msu);
       });
     }
     function tsNeedsProcessing(el) {
@@ -319,7 +324,7 @@ function calcDistanceToClosestSibling(el) {
         // popup its now sibling of the parent div
         const fuzDateEl = el.parentNode.nextSibling;
         console.assert(fuzDateEl.classList.contains("dropbtn"));
-        fuzDateEl.textContent = toFuzzyDate(dateTime.setLocale("en"), mostsigunit);
+        updateFuzzyDateElement(fuzDateEl, dateTime, mostsigunit);
       }
     }
     function logChoice(el) {
@@ -381,7 +386,8 @@ function calcDistanceToClosestSibling(el) {
         let dateTime = DateTime.fromFormat(text, "MMM d, y");
         var msu = res.mostsigunit;
         dateTime = initialRedact(el, dateTime, msu);
-        el.textContent = "Commits on " + dateTime.toFormat("MMM d, y");
+        const prep = (msu == "year" || msu == "month") ? "in" : "on";
+        el.textContent = `Commits ${prep} ` + toFuzzyDate(dateTime, msu);
       });
     }
 
