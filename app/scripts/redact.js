@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { updateStudyData, sendReport } from "./study.js";
+import { updateStudyData, sendReport, updateViewCount } from "./study.js";
 import { toFuzzyDate } from "./fuzzydate.js";
 import { createPopper } from '@popperjs/core';
 
@@ -395,6 +395,17 @@ function calcDistanceToClosestSibling(el) {
         updateFuzzyDateElement(fuzDateEl, dateTime, mostsigunit);
       }
     }
+    function logViewLoad() {
+      let urlType = getUrlType();
+      console.log(`Log view load for ${urlType}`);
+      browser.storage.local.get("studyOptIn")
+      .then((res) => {
+        if (res.studyOptIn) {
+          updateViewCount(urlType);
+        }
+      })
+      .catch(error => console.error(error));
+    }
     function logChoice(el) {
       // log the unredaction choice of the user
       if (el.dataset.msuChanged !== "true") {
@@ -533,6 +544,7 @@ function calcDistanceToClosestSibling(el) {
       // hook for partial refreshes
       console.log("Refresh hook");
       // content change without full page load
+      logViewLoad();
       redactTimelineTimestamps();
       redactTimestamps();
     });
@@ -589,6 +601,8 @@ function calcDistanceToClosestSibling(el) {
       }
     }, true);
 
+    // - log view for study (if opted in)
+    logViewLoad();
 
     // - send study report if participanting and necessary
     browser.storage.local.get("studyOptIn")
