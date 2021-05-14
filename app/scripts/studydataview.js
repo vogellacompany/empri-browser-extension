@@ -2,8 +2,8 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
 
 (() => {
   let optin = document.querySelector("#optIn");
-  let placeholder = document.querySelector("#placeholder");
-  let msuTable = placeholder.parentElement;
+  let msuTable = document.querySelector("#msu-choices > tbody");
+  let viewCountTable = document.querySelector("#view-counts > tbody");
   let partIdCell = document.querySelector("#participantId");
   let optInDateCell = document.querySelector("#optInDate");
   let daysSinceCell = document.querySelector("#daysSinceOptIn");
@@ -16,6 +16,7 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
       "studyOptIn",
       "studyParticipantId",
       "studyOptInDate",
+      "viewCounts",
     ])
     .then((res) => {
       optin.textContent = res.studyOptIn ? "yes" : "no";
@@ -32,8 +33,17 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
 
       if (res.msuChoices !== undefined) {
         let msuChoices = res.msuChoices.map(MsuChoiceRecord.from);
-        placeholder.remove();
+        msuTable.querySelector(".placeholder").remove();
         msuChoices.forEach(addMsuChoiceRows);
+      }
+
+      if (res.viewCounts !== undefined) {
+        viewCountTable.querySelector(".placeholder").remove();
+        for (let type in res.viewCounts) {
+          if (res.viewCounts.hasOwnProperty(type)) {
+            addViewCountRow(type, res.viewCounts[type]);
+          }
+        }
       }
     })
     .catch(error => console.error(error));
@@ -60,6 +70,16 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
     freqCol.textContent = record.frequency;
     row.appendChild(freqCol);
     msuTable.appendChild(row);
+  }
+  function addViewCountRow(type, count) {
+    var row = document.createElement("tr");
+    var tCol = document.createElement("td");
+    tCol.textContent = type;
+    row.appendChild(tCol);
+    var cCol = document.createElement("td");
+    cCol.textContent = count;
+    row.appendChild(cCol);
+    viewCountTable.appendChild(row);
   }
 
   document.addEventListener("DOMContentLoaded", loadStudyData);

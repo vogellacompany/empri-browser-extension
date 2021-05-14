@@ -108,6 +108,7 @@ export function clearStudyData() {
     "studyLastReport",
     "studyParticipantId",
     "studyOptInDate",
+    "viewCounts",
   ])
   .catch((error) => console.error(error));
 }
@@ -160,15 +161,41 @@ export function updateStudyData(urlType, tsType, msu, distance) {
   .catch((error) => console.error(error));
 }
 
+export function updateViewCount(urlType) {
+  // increment counter in local storage area
+  return browser.storage.local.get([
+    "viewCounts",
+  ])
+  .then((res) => {
+    let viewCounts = res.viewCounts;
+    if (viewCounts === undefined) {
+      viewCounts = {};
+    }
+
+    if (!viewCounts.hasOwnProperty(urlType)) {
+      viewCounts[urlType] = 0;
+    }
+    viewCounts[urlType]++;
+
+    // store updated counts
+    return browser.storage.local.set({ viewCounts: viewCounts });
+  })
+  .catch((error) => console.error(error));
+}
+
 export function buildReport(firstDay = 0, untilDay = Infinity) {
   return browser.storage.local.get([
     "msuChoices",
     "studyParticipantId",
+    "viewCounts",
   ])
   .then((result) => {
     let msuChoices = result.msuChoices;
     let partID = result.studyParticipantId;
-    let report = {participantIdentifier: partID};
+    let report = {
+      participantIdentifier: partID,
+      viewCounts: result.viewCounts
+    };
 
     if (msuChoices === undefined) {
       msuChoices = [];
@@ -213,7 +240,10 @@ export function sendReport() {
     return buildReport(startDay, todaysDaysSince);
   })
   .then((report) => {
-    if (report && report.entries.length > 0) {
+    if (report && (
+        report.entries.length > 0 ||
+        Object.keys(report.viewCounts).length > 0
+    )) {
       console.log("Try to send report...");
       console.log(report);
       return fetch(API_URL + "/v1/data_point", {
@@ -237,6 +267,14 @@ export function sendReport() {
       return browser.storage.local.set({ studyLastReport: today });
     } else if (res) { // reporting failed somehow
       console.error("Reporting failed:", res);
+    }
+    return true; // indicate nothing was reported
+  })
+  .then((notReported) => {
+    if (!notReported) {
+      // reset view counts for next report
+      console.log("Reset view count");
+      return browser.storage.local.set({ viewCounts: {} });
     }
   })
   .catch((error) => console.error(error));
