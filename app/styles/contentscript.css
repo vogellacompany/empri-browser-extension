@@ -17,6 +17,7 @@
   background-color: white;
   cursor: default;
   min-width: 256px;
+  margin-top: 3px;
   padding: 5px 5px;
   overflow: auto;
   font-size: 12px;
