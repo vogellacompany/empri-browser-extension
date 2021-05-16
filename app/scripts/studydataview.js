@@ -38,11 +38,15 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
       }
 
       if (res.viewCounts !== undefined) {
-        viewCountTable.querySelector(".placeholder").remove();
+        let hasCounts = false;
         for (let type in res.viewCounts) {
           if (res.viewCounts.hasOwnProperty(type)) {
             addViewCountRow(type, res.viewCounts[type]);
+            hasCounts = true;
           }
+        }
+        if (hasCounts) {
+          viewCountTable.querySelector(".placeholder").remove();
         }
       }
     })
