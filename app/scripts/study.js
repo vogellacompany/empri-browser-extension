@@ -164,18 +164,23 @@ export function updateStudyData(urlType, tsType, msu, distance) {
 export function updateViewCount(urlType) {
   // increment counter in local storage area
   return browser.storage.local.get([
+    "studyOptInDate", // to calc daysSince
     "viewCounts",
   ])
   .then((res) => {
+    let daysSince = calcDaysSince(res.studyOptInDate);
     let viewCounts = res.viewCounts;
     if (viewCounts === undefined) {
       viewCounts = {};
     }
 
-    if (!viewCounts.hasOwnProperty(urlType)) {
-      viewCounts[urlType] = 0;
+    if (!viewCounts.hasOwnProperty(daysSince)) {
+      viewCounts[daysSince] = {};
     }
-    viewCounts[urlType]++;
+    if (!viewCounts[daysSince].hasOwnProperty(urlType)) {
+      viewCounts[daysSince][urlType] = 0;
+    }
+    viewCounts[daysSince][urlType]++;
 
     // store updated counts
     return browser.storage.local.set({ viewCounts: viewCounts });

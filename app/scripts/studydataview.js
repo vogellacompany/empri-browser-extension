@@ -39,10 +39,15 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
 
       if (res.viewCounts !== undefined) {
         let hasCounts = false;
-        for (let type in res.viewCounts) {
-          if (res.viewCounts.hasOwnProperty(type)) {
-            addViewCountRow(type, res.viewCounts[type]);
-            hasCounts = true;
+        let vc = res.viewCounts;
+        for (let day in vc) {
+          if (vc.hasOwnProperty(day)) {
+            for (let type in vc[day]) {
+              if (vc[day].hasOwnProperty(type)) {
+                addViewCountRow(day, type, vc[day][type]);
+                hasCounts = true;
+              }
+            }
           }
         }
         if (hasCounts) {
@@ -75,8 +80,11 @@ import { buildReport, calcDaysSince, resetStudyData, MsuChoiceRecord } from "./s
     row.appendChild(freqCol);
     msuTable.appendChild(row);
   }
-  function addViewCountRow(type, count) {
+  function addViewCountRow(day, type, count) {
     var row = document.createElement("tr");
+    var dCol = document.createElement("td");
+    dCol.textContent = day;
+    row.appendChild(dCol);
     var tCol = document.createElement("td");
     tCol.textContent = type;
     row.appendChild(tCol);
