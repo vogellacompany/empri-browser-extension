@@ -94,34 +94,39 @@ function calcDistanceToClosestSibling(el) {
       Second: "second",
     };
 
+    function clickBlackhole(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     function hasPopup(ts) {
       var parent = ts.parentNode;
       return parent.classList.contains("dropdown");
     }
     function createPopup(ts, twoClickNote = false) {
       // - insert div around ts element if not already present
+      console.assert(ts.classList.contains("replaced"), "TS not replaced");
       var parent = ts.parentNode;
+      let fuzDateEl = ts.nextSibling;
       if (!hasPopup(ts)) {
         var ddwrapper = document.createElement("div");
         ddwrapper.classList.add("dropdown");
         parent.insertBefore(ddwrapper, ts);
         ddwrapper.appendChild(ts);
+        ddwrapper.appendChild(fuzDateEl);
         if (twoClickNote) {
           var note = document.createElement("span");
           note.textContent = "Click again to follow link";
           note.classList.add("popuptext");
           note.classList.add("show");
+          note.addEventListener("click", clickBlackhole);
           ddwrapper.appendChild(note);
         }
         var ddcontent = document.createElement("div");
         ddcontent.classList.add("dropdown-content");
         ddwrapper.appendChild(ddcontent);
-        ddcontent.addEventListener("click", function(event) {
-          // catch and discard all clicks on the open popup
-          // to prevent parent links from being followed etc
-          event.preventDefault();
-          event.stopPropagation();
-        });
+        // catch and discard all clicks on the open popup
+        // to prevent parent links from being followed etc
+        ddcontent.addEventListener("click", clickBlackhole);
         // Date preview <input id="dateprev" type="datetime-local" readonly>
         var dateprev = document.createElement("span");
         dateprev.id = "dateprev";
@@ -201,12 +206,15 @@ function calcDistanceToClosestSibling(el) {
     function removePopup(el) {
       // remove dropdown elements from DOM
       var parent = el.parentNode;
+      let fuzDateEl = el.nextSibling;
+      console.assert(fuzDateEl && fuzDateEl.classList.contains("dropbtn"), "Sibling not fuzzy date");
       if (!parent.classList.contains("dropdown")) {
         return; // no popup to remove
       }
       var ddwrapper = parent;
       var origParent = ddwrapper.parentNode;
       origParent.insertBefore(el, ddwrapper);
+      origParent.insertBefore(fuzDateEl, ddwrapper);
       origParent.removeChild(ddwrapper);
     }
     function saveAndRemovePopup(dbtn) {
@@ -240,6 +248,18 @@ function calcDistanceToClosestSibling(el) {
       el.addEventListener("click", tsClickHandler);
       el.setAttribute("role", "button");
     }
+    function fuzDateClickHandler(event) {
+      // redirect event to time-element
+      let timeEl = this.parentNode.querySelector(".dropbtn.replaced");
+      console.assert(timeEl.classList.contains("dropbtn"), "Sibling not time-element %s", timeEl);
+      let popupOpen = hasPopup(timeEl);
+      const newEvent = new Event('click');
+      timeEl.dispatchEvent(newEvent);
+      if (!popupOpen) { // allow anchor following on second click
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
     function updateFuzzyDateElement(fuzEl, dateTime, msu) {
       fuzEl.textContent = toFuzzyDate(dateTime, msu);
       fuzEl.title = toFuzzyDate(dateTime, msu, false, true);
@@ -262,17 +282,15 @@ function calcDistanceToClosestSibling(el) {
           fuzDateEl.classList.add("dropbtn");
           timeEl.parentElement.insertBefore(fuzDateEl, timeEl.nextSibling);
           fuzDateEl.setAttribute("role", "button");
-          fuzDateEl.addEventListener("click", function(event) {
-            // redirect event to time-element
-            const newEvent = new Event('click');
-            timeEl.dispatchEvent(newEvent);
-            event.preventDefault();
-            event.stopPropagation();
-          });
           timeEl.classList.add("replaced");
         } else {
           fuzDateEl = timeEl.nextSibling;
+          console.assert(fuzDateEl.classList.contains("dropbtn"), "Sibling not fuzzy date");
         }
+        // set or re-set listener
+        // (also necessary for existing fuzDateEl, e.g., after a history
+        // navigation)
+        fuzDateEl.addEventListener("click", fuzDateClickHandler);
         updateFuzzyDateElement(fuzDateEl, dateTime, msu);
       });
     }
@@ -324,8 +342,8 @@ function calcDistanceToClosestSibling(el) {
         // get fuzzy date element
         // was next sibling of time-element but with
         // popup its now sibling of the parent div
-        const fuzDateEl = el.parentNode.nextSibling;
-        console.assert(fuzDateEl.classList.contains("dropbtn"));
+        const fuzDateEl = el.nextSibling;
+        console.assert(fuzDateEl && fuzDateEl.classList.contains("dropbtn"));
         updateFuzzyDateElement(fuzDateEl, dateTime, mostsigunit);
       }
     }
@@ -460,7 +478,7 @@ function calcDistanceToClosestSibling(el) {
     });
 
     function saveAndRemoveAllPopups() {
-      document.querySelectorAll(".dropdown > .dropbtn").forEach((dbtn) => {
+      document.querySelectorAll(".dropdown > .dropbtn.replaced").forEach((dbtn) => {
         saveAndRemovePopup(dbtn); // remove remaining dropdowns from DOM
       });
     }
