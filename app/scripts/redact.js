@@ -251,8 +251,6 @@ function calcDistanceToClosestSibling(el) {
       el.dataset.msuChanged = true;
     }
     function removePopup(el) {
-      console.log("### removePopup()");
-      console.log(el);
       // remove dropdown elements from DOM
       var parent = el.parentNode;
       let fuzDateEl = el.nextSibling;
