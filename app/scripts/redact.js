@@ -450,18 +450,27 @@ function calcDistanceToClosestSibling(el) {
     function redactTimelineItem(el) {
       return browser.storage.sync.get(["mostsigunit"]).then((res) => {
         // "Commits on Jul 12, 2020".substring(11) -> "Jul 12, 2020"
-        let text = el.textContent.substring(11);
+        let text = el.textContent.trim().substring(11);
         let dateTime = DateTime.fromFormat(text, "MMM d, y");
         var msu = res.mostsigunit;
         dateTime = initialRedact(el, dateTime, msu);
         const prep = (msu == "year" || msu == "month") ? "in" : "on";
         el.textContent = `Commits ${prep} ` + toFuzzyDate(dateTime, msu);
+        return el;
       });
     }
 
-    // https://github.com/user/repo/commits/master
-    // https://github.com/user/repo/pull/42/commits
     async function redactTimelineTimestamps() {
+      redactTimelineNested();
+      redactTimelineFlat();
+    }
+
+    async function redactTimelineNested() {
+      // Textual date grouping header for list of commits
+      // (not themselves timeline items)
+      // format used on
+      // - /user/repo/commits/master
+      // - /user/repo/pull/42/commits
       let timelineTimestamps = document.querySelectorAll(
         ".TimelineItem-body > .f5"
       );
@@ -491,6 +500,32 @@ function calcDistanceToClosestSibling(el) {
         }
       }
       timelineTimestamps.forEach((el) => {});
+    }
+
+    async function redactTimelineFlat() {
+      // Date text used for push item which are at
+      // same (flat) nesting level as commit items
+      // format used on /user/repo/compare/
+      let prevDate = "";
+      document.querySelectorAll(
+        ".TimelineItem-badge > svg.octicon-repo-push"
+      ).forEach(function (svgEl) {
+        let tlEl = svgEl.parentElement.parentElement;
+        let dateDiv = tlEl.querySelector(".TimelineItem-body");
+        redactTimelineItem(dateDiv)
+        .then((redEl) => {
+          // remove subsequent items with the same
+          // redacted date value, only keep the first.
+          if (prevDate != redEl.textContent) {
+            prevDate = redEl.textContent;
+          } else {
+            // remove the timelineitem but leave
+            // the padding div around the push group
+            redEl.parentNode.remove();
+          }
+        })
+        .catch(error => console.error(error));
+      });
     }
 
     redactTimelineTimestamps();
