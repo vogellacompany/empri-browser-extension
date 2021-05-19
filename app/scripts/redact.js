@@ -24,6 +24,7 @@ const ghRepoUrlTypes = {
   pull: /^\/pull\/\d+\/?$/i,
   pullcommits: /^\/pull\/\d+\/commits\/?$/i,
   pullcommit: /^\/pull\/\d+\/commits\/[0-9a-f]+\/?$/i,
+  pullchecks: /^\/pull\/\d+\/checks\/?$/i,
   repo: /^\/?$/i,
   releaselist: /^\/releases\/?$/i,
   release: /^\/releases\/tag\/[^/]+\/?$/i,
