@@ -525,9 +525,12 @@ function calcDistanceToClosestSibling(el) {
     });
 
     function saveAndRemoveAllPopups() {
+      let wasOpen = false;
       document.querySelectorAll(".dropdown-empri > .dropbtn.replaced").forEach((dbtn) => {
         saveAndRemovePopup(dbtn); // remove remaining dropdowns from DOM
+        wasOpen = true;
       });
+      return wasOpen;
     }
 
     // - set popup close listeners (click outside)
@@ -541,9 +544,14 @@ function calcDistanceToClosestSibling(el) {
     };
     document.addEventListener('keydown', function(event) {
       if (event.key === "Escape") {
-        saveAndRemoveAllPopups();
+        let wasOpen = saveAndRemoveAllPopups();
+        if (wasOpen) { // Esc was probably intended for us
+          // prevent Esc to also close higher-level menus
+          event.preventDefault();
+          event.stopPropagation();
+        }
       }
-    });
+    }, true);
 
 
     // - send study report if participanting and necessary
