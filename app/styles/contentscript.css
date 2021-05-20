@@ -5,8 +5,7 @@
 .dropbtn:hover, .dropbtn:focus {
 }
 
-.dropdown {
-  position: relative;
+.dropdown-empri {
   display: inline-block;
 }
 
@@ -15,9 +14,9 @@
   position: absolute;
   clear: both;
   background-color: white;
+  color: var(--color-text-secondary);
   cursor: default;
   min-width: 256px;
-  margin-top: 3px;
   padding: 5px 5px;
   overflow: auto;
   font-size: 12px;
@@ -78,7 +77,7 @@
 
 
 /* 2-Click popup text */
-.dropdown .popuptext {
+.dropdown-empri .popuptext {
   visibility: visible;
   width: 160px;
   background-color: #555;
@@ -87,23 +86,42 @@
   border-radius: 6px;
   padding: 8px 0;
   position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -80px;
+  z-index: 2;
   -webkit-animation: fadeinout 2s linear forwards;
   animation: fadeinout 2s linear forwards;
 }
-/* Popup arrow */
-.dropdown .popuptext::after {
-  content: "";
+#arrow,
+#arrow::before {
   position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
+  width: 8px;
+  height: 12px;
+  background: inherit;
+}
+
+#arrow {
+  visibility: hidden;
+}
+
+#arrow::before {
+  visibility: visible;
+  content: '';
+  transform: rotate(45deg);
+}
+
+.dropdown-empri .popuptext[data-popper-placement^='top'] > #arrow {
+  bottom: -4px;
+}
+
+.dropdown-empri .popuptext[data-popper-placement^='bottom'] > #arrow {
+  top: -4px;
+}
+
+.dropdown-empri .popuptext[data-popper-placement^='left'] > #arrow {
+  right: -4px;
+}
+
+.dropdown-empri .popuptext[data-popper-placement^='right'] > #arrow {
+  left: -4px;
 }
 
 @-webkit-keyframes fadeout {

@@ -11,6 +11,7 @@
     "webextension-toolbox": "latest"
   },
   "dependencies": {
+    "@popperjs/core": "^2.9.2",
     "luxon": "^1.25.0",
     "uuid": "^8.3.2"
   }
