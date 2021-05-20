@@ -225,7 +225,7 @@ function calcDistanceToClosestSibling(el) {
     }
     function popperStrategyFor(el) {
       // GitHub seems to use details-menu elements for all it's dropdowns
-      return el.closest("details-menu") ? "fixed" : "absolute";
+      return el.closest("details-menu") || el.closest(".js-project-card-details-pane") ? "fixed" : "absolute";
     }
     function setActiveMsu(el) {
       let msu = el.dataset.mostsigunit;
