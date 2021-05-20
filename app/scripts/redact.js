@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { updateStudyData, sendReport } from "./study.js";
 import { toFuzzyDate } from "./fuzzydate.js";
+import { createPopper } from '@popperjs/core';
 
 const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -102,7 +103,7 @@ function calcDistanceToClosestSibling(el) {
     }
     function hasPopup(ts) {
       var parent = ts.parentNode;
-      return parent.classList.contains("dropdown");
+      return parent.classList.contains("dropdown-empri");
     }
     function createPopup(ts, twoClickNote = false) {
       // - insert div around ts element if not already present
@@ -111,17 +112,39 @@ function calcDistanceToClosestSibling(el) {
       let fuzDateEl = ts.nextSibling;
       if (!hasPopup(ts)) {
         var ddwrapper = document.createElement("div");
-        ddwrapper.classList.add("dropdown");
+        ddwrapper.classList.add("dropdown-empri");
         parent.insertBefore(ddwrapper, ts);
         ddwrapper.appendChild(ts);
         ddwrapper.appendChild(fuzDateEl);
         if (twoClickNote) {
-          var note = document.createElement("span");
+          var note = document.createElement("div");
           note.textContent = "Click again to follow link";
           note.classList.add("popuptext");
           note.classList.add("show");
           note.addEventListener("click", clickBlackhole);
+          let arrow = document.createElement("div");
+          arrow.setAttribute("data-popper-arrow", "");
+          arrow.id = "arrow";
+          note.appendChild(arrow);
           ddwrapper.appendChild(note);
+          createPopper(fuzDateEl, note, {
+            placement: 'top',
+            strategy: popperStrategyFor(ts),
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 3],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false, // true by default
+                },
+              },
+            ],
+          });
         }
         var ddcontent = document.createElement("div");
         ddcontent.classList.add("dropdown-content");
@@ -181,6 +204,28 @@ function calcDistanceToClosestSibling(el) {
       setActiveMsu(ts);
       // - set menu visible
       ddcontent.classList.toggle("show");
+      createPopper(fuzDateEl, ddcontent, {
+        placement: 'bottom-start',
+        strategy: popperStrategyFor(ts),
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 3],
+            },
+          },
+          {
+            name: 'preventOverflow',
+            options: {
+              mainAxis: false, // true by default
+            },
+          },
+        ],
+      });
+    }
+    function popperStrategyFor(el) {
+      // GitHub seems to use details-menu elements for all it's dropdowns
+      return el.closest("details-menu") ? "fixed" : "absolute";
     }
     function setActiveMsu(el) {
       let msu = el.dataset.mostsigunit;
@@ -206,11 +251,13 @@ function calcDistanceToClosestSibling(el) {
       el.dataset.msuChanged = true;
     }
     function removePopup(el) {
+      console.log("### removePopup()");
+      console.log(el);
       // remove dropdown elements from DOM
       var parent = el.parentNode;
       let fuzDateEl = el.nextSibling;
       console.assert(fuzDateEl && fuzDateEl.classList.contains("dropbtn"), "Sibling not fuzzy date");
-      if (!parent.classList.contains("dropdown")) {
+      if (!parent.classList.contains("dropdown-empri")) {
         return; // no popup to remove
       }
       var ddwrapper = parent;
@@ -480,7 +527,7 @@ function calcDistanceToClosestSibling(el) {
     });
 
     function saveAndRemoveAllPopups() {
-      document.querySelectorAll(".dropdown > .dropbtn.replaced").forEach((dbtn) => {
+      document.querySelectorAll(".dropdown-empri > .dropbtn.replaced").forEach((dbtn) => {
         saveAndRemovePopup(dbtn); // remove remaining dropdowns from DOM
       });
     }
