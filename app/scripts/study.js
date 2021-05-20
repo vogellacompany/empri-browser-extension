@@ -197,9 +197,10 @@ export function buildReport(firstDay = 0, untilDay = Infinity) {
   .then((result) => {
     let msuChoices = result.msuChoices;
     let partID = result.studyParticipantId;
+    let vcs = result.viewCounts;
     let report = {
       participantIdentifier: partID,
-      viewCounts: result.viewCounts
+      viewCounts: {}
     };
 
     if (msuChoices === undefined) {
@@ -208,12 +209,25 @@ export function buildReport(firstDay = 0, untilDay = Infinity) {
 
     // filter out entries before firstDay
     let allEntries = Array.from(msuChoices, MsuChoiceRecord.from);
-    let newEntries = allEntries.filter((e) => e.daysSinceOptIn >= firstDay && e.daysSinceOptIn < untilDay);
+    let newEntries = allEntries.filter((e) => dayInRange(e.daysSinceOptIn, firstDay, untilDay));
     report.entries = newEntries.map((e) => e.toReportFormat());
+
+    // filter out view counts
+    for (var day in vcs) {
+      if (vcs.hasOwnProperty(day)) {
+        if (dayInRange(day, firstDay, untilDay)) {
+            report.viewCounts[day] = vcs[day];
+        }
+      }
+    }
 
     return report;
   })
   .catch((error) => console.error(error));
+}
+
+function dayInRange(day, since, until) {
+  return day >= since && day < until;
 }
 
 export function sendReport() {
