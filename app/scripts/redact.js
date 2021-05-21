@@ -561,6 +561,15 @@ function calcDistanceToClosestSibling(el) {
           // Warning: Checking for tsNeedsProcessing(node) will cause Firefox to hang somehow
         ) {
           redactTimeElement(node);
+        } else {
+          let timeElements = node.querySelectorAll("time-ago, relative-time");
+          if (timeElements) {
+            timeElements.forEach((el) => {
+              if (!el.dataset.dtoriginally) {
+                redactTimeElement(el);
+              }
+            });
+          }
         }
       });
     });
