@@ -539,13 +539,41 @@ function calcDistanceToClosestSibling(el) {
       });
     }
 
+    async function redactCustomTimestamp(el, timeElement="relative-time") {
+      // replace custom element with time-element
+      // title format 2021-05-19 01:07:06 UTC
+      // Note: luxon cannot handle this type of textual timezone
+      // FIXME: Timezones are currently lost
+      const titleFmt = "yyyy-MM-dd HH:mm:ss z";
+      let dateTime = DateTime.fromFormat(el.title, titleFmt);
+      let timeEl = document.createElement(timeElement);
+      timeEl.setAttribute("datetime", dateTime.toISO());
+      el.parentNode.insertBefore(timeEl, el);
+      el.remove();
+      redactTimeElement(timeEl);
+    }
+
+    function redactCustomTimestamps() {
+      // Timestamps not rendered with time-elements
+      // and not part of a timeline
+      let urlType = getUrlType();
+
+      if (urlType == "milestonelist") {
+        document.querySelectorAll(".milestone-meta-item > span[title]").forEach(function (el) {
+          redactCustomTimestamp(el, "time-ago");
+        });
+      }
+    }
+
     redactTimelineTimestamps();
+    redactCustomTimestamps();
     document.addEventListener("pjax:end", function () {
       // hook for partial refreshes
       console.log("Refresh hook");
       // content change without full page load
       logViewLoad();
       redactTimelineTimestamps();
+      redactCustomTimestamps();
       redactTimestamps();
     });
 
