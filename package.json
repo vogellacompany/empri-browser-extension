@@ -1,6 +1,6 @@
 {
   "name": "GitHub-Timestamp-Privacy",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Control precisions of timestamps shown on GitHub.",
   "scripts": {
     "dev": "NODE_ENV=development scripts/create_manifest && webextension-toolbox dev",
