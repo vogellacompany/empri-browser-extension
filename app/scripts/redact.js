@@ -29,7 +29,9 @@ const ghRepoUrlTypes = {
   releaselist: /^\/releases\/?$/i,
   release: /^\/releases\/tag\/[^/]+\/?$/i,
   taglist: /^\/tags\/?$/i,
-  tree: /^\/tree\//i,
+  treeroot: /^\/tree\/[^/]+\/?$/i,
+  treesub: /^\/tree\/[^/]+\/.+$/i,
+  blob: /^\/blob\/[^/]+\//i,
 };
 
 // build simple xpath to element
