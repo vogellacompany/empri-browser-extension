@@ -430,8 +430,12 @@ function calcDistanceToClosestSibling(el) {
     }
     function getUrlType() {
       let path = window.location.pathname;
-      let numPathComp = path.split("/").length - 1; // -1 because path starts with /
-      let subrepopath = path.replace(/^(\/[^/]+){2}/i, "");
+      let numPathComp = path.split("/").reduce((cnt, val) => {
+        if (val != "") {
+          cnt++;
+        }
+        return cnt;
+      }, 0);
       let types;
       if (numPathComp < 2) {
         types = ghBaseUrlTypes;
