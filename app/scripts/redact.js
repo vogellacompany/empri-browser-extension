@@ -32,6 +32,9 @@ const ghRepoUrlTypes = {
   treeroot: /^\/tree\/[^/]+\/?$/i,
   treesub: /^\/tree\/[^/]+\/.+$/i,
   blob: /^\/blob\/[^/]+\//i,
+  wikipage: /^\/wiki(\/[^/]+)?\/?$/i,
+  wikipagehistory: /^\/wiki\/([^/]+)\/_history$/i,
+  wikipagerev: /^\/wiki\/([^/]+)\/([0-9a-f]+)\/?$/i,
 };
 
 // build simple xpath to element
