@@ -35,6 +35,9 @@ const ghRepoUrlTypes = {
   wikipage: /^\/wiki(\/[^/]+)?\/?$/i,
   wikipagehistory: /^\/wiki\/([^/]+)\/_history$/i,
   wikipagerev: /^\/wiki\/([^/]+)\/([0-9a-f]+)\/?$/i,
+  workflowruns: /^\/actions(\/workflows\/[^/]+)?\/?$/i,
+  workflowrun: /^\/actions\/runs\/(\d+)\/?$/i,
+  jobrun: /^\/runs\/(\d+)\/?$/i,
 };
 
 // build simple xpath to element
