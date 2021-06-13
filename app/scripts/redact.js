@@ -38,6 +38,8 @@ const ghRepoUrlTypes = {
   workflowruns: /^\/actions(\/workflows\/[^/]+)?\/?$/i,
   workflowrun: /^\/actions\/runs\/(\d+)\/?$/i,
   jobrun: /^\/runs\/(\d+)\/?$/i,
+  projectlist: /^\/projects\/?$/i,
+  project: /^\/projects\/(\d+)\/?$/i,
 };
 
 // build simple xpath to element
