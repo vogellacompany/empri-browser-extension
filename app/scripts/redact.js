@@ -8,6 +8,8 @@ const dateprevFormat = "yyyy-MM-dd HH:mm:ss";
 // GitHub View/URL classifier
 const ghBaseUrlTypes = {
   root: /^\/?$/i,
+  userissues: /^\/issues\/?$/i,
+  userpulls: /^\/pulls\/?$/i,
   user: /^\/[^/]+\/?$/i,
 };
 const ghRepoUrlTypes = {
