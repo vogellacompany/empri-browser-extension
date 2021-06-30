@@ -29,15 +29,28 @@
       <div id="datapurgemodal" class="modal">
         <div class="modal-content">
           <p>
-            Opting out will delete the study data from your browser.
-            If you want to keep them you should
-            <a href="studydataview.html" target="_blank">make a copy</a>
+            Opting out will end your participation and delete the study data from your browser.
+            You can also choose to remove all your data from our study.
+            However we appreciate if you let us use previously sent data.
+            <br>
+            If you want to keep a copy you should
+            <a href="studydataview.html" target="_blank">make one</a>
             before continuing.
           </p>
-          <span id="purgeCont" class="button btn-red" role="button">Delete data and opt-out</span>
-          <span id="purgeAbort" class="button btn-gray" role="button">Opt-out later</span>
+          <p id="deleteServer-box">
+            <label for="deleteServer">Remove data from study</label>
+            <input type="checkbox" id="deleteServer" name="deleteServer">
+          </p>
+          <p id="action-box">
+            <span id="purgeCont" class="button btn-red" role="button">Delete and opt-out</span>
+            <span id="purgeAbort" class="button btn-gray" role="button">Opt-out later</span>
+          </p>
         </div>
       </div>
+      <p id="response" class="message"></p>
+      <p id="contact">
+        <a href="mailto:christian.burkert@uni-hamburg.de?subject=GHTimestampStudy">Contact support</a>
+      </p>
     </div>
     <!-- TODO(FAP): show unsaved changes (dirty state) and give feedback on save action? -->
     <script src="../scripts/options.js"></script>

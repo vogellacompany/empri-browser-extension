@@ -298,3 +298,45 @@ export function sendReport() {
   })
   .catch((error) => console.error(error));
 }
+
+
+export function requestDeletion() {
+  return browser.storage.local.get([
+    "studyParticipantId",
+    "studyLastReport",
+  ])
+  .then((result) => {
+    let partId = result.studyParticipantId;
+    let lastSent = result.studyLastReport;
+    let isReported = (lastSent != undefined);
+
+    if (!isReported) {
+      console.log("No reports sent yet.");
+      return false;
+    }
+
+    return fetch(API_URL + "/v1/participant/" + partId, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Basic " +
+          btoa(
+            process.env.BROWSER_USER + ":" + process.env.BROWSER_PASSWORD
+          ),
+      },
+    })
+  })
+  .then((res) => {
+    if (res === false) { // nothing to delete
+      return { result: "notsent" };
+    } else if (res && res.status == 204) { // deletion succeeded
+      return { result: "deleted" };
+    } else if (res) { // deletion failed somehow
+      return {
+        result: "error",
+        status: res.status,
+      };
+    }
+  });
+}
