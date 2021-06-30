@@ -1,11 +1,13 @@
 import { DateTime } from "luxon";
-import { clearStudyData, initStudy } from "./study.js";
+import { clearStudyData, initStudy, requestDeletion } from "./study.js";
 
 (() => {
   let msu = document.querySelector("#mostsigunit");
   let exampleField = document.querySelector("#example");
   let studyOptIn = document.querySelector("#study-optin");
   let purgeModal = document.querySelector("#datapurgemodal");
+  let serverDeleteBox = document.querySelector("#deleteServer");
+  let responseEl = document.querySelector("#response");
 
   function saveOptions() {
     console.assert(!studyOptIn.checked || msu.value == "year");
@@ -102,16 +104,52 @@ import { clearStudyData, initStudy } from "./study.js";
     }
   });
   document.querySelector("#purgeAbort").addEventListener("click", abortOptOut);
-  document.querySelector("#purgeCont").addEventListener("click", function() {
+
+  function optOutHandler(event) {
     // purge data
-    purgeModal.style.display = "none";
-    clearStudyData()
-    .then(() => {
-      enableMsuSelection();
-      return saveOptions();
+    responseEl.classList.remove("message-success", "message-failure");
+    let doDelete = serverDeleteBox.checked;
+    let deletion;
+    if (doDelete) {
+      console.log("Requesting deletion");
+      deletion = requestDeletion().then((res) => {
+        console.log(res);
+        if (res.result == "notsent" || res.result == "deleted") {
+          return true;
+        } else {
+          responseEl.textContent = `Error ${res.status} while deleting study data. Please contact support.`;
+          responseEl.classList.add("message-failure");
+          abortOptOut();
+          return false;
+        }
+      });
+    } else {
+      deletion = Promise.resolve(true);
+    }
+    deletion.then((success) => {
+      if (success) {
+        return clearStudyData(); // fulfilled with no return
+      }
+      return success; // to be distinguishable from clears undefined
     })
-    .catch(error => console.error(error));
-  });
+    .then((res) => {
+      if (res === undefined) {  // clear succeeded
+        enableMsuSelection();
+        return saveOptions();
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      responseEl.textContent = `Error ${error}. Please contact support.`;
+      responseEl.classList.add("message-failure");
+      abortOptOut();
+    })
+    .finally(() => {
+      purgeModal.style.display = "none";
+    });
+  }
+  document.querySelector("#purgeCont").addEventListener("click", optOutHandler);
+
   // When the user clicks anywhere outside of the modal, close it
   window.addEventListener("click", function(event) {
     if (event.target == purgeModal) {
