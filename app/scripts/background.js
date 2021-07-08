@@ -1,3 +1,5 @@
+import { sendReport } from "./study.js";
+
 browser.storage.sync.get("ghrOn").then((res) => {
   if (typeof res.ghrOn == "undefined") {
     browser.storage.sync.set({
@@ -26,3 +28,25 @@ browser.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
       break;
   }
 });
+
+
+// Synchronise reporting in background script to avoid
+// duplicate reporting by parallel active content scripts
+var reportRunning = false;
+function manageReporting(message, sender, respond) {
+  if (message.type != "sendReport") {
+    return; // message not for us
+  }
+  if (reportRunning) {
+    return; // already triggered by another sender
+  }
+  reportRunning = true;
+  sendReport()
+  .then(() => respond("done"))
+  .catch((err) => respond(err))
+  .finally(() => {
+    reportRunning = false;
+  });
+  return true; // make caller wait for async response
+}
+browser.runtime.onMessage.addListener(manageReporting);
