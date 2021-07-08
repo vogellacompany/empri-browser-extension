@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { updateStudyData, sendReport, updateViewCount } from "./study.js";
+import { updateStudyData, updateViewCount } from "./study.js";
 import { toFuzzyDate } from "./fuzzydate.js";
 import { createPopper } from '@popperjs/core';
 
@@ -657,11 +657,15 @@ function calcDistanceToClosestSibling(el) {
     // - log view for study (if opted in)
     logViewLoad();
 
-    // - send study report if participanting and necessary
+    // - send study report if participating and necessary
+    // The actual sending is done by the background script to be
+    // thread-safe for parallel content script runs
     browser.storage.local.get("studyOptIn")
     .then((res) => {
       if (res.studyOptIn) {
-        return sendReport();
+        return browser.runtime.sendMessage(
+          { type: "sendReport" }
+        );
       }
     })
     .catch(error => console.error(error));
