@@ -479,6 +479,12 @@ function calcDistanceToClosestSibling(el) {
         // "Commits on Jul 12, 2020".substring(11) -> "Jul 12, 2020"
         let text = el.textContent.trim().substring(11);
         let dateTime = DateTime.fromFormat(text, "MMM d, y");
+        if (dateTime.invalid) {
+          // element does not have expected date format because it
+          // has most likely already been redacted
+          // (e.g., if we do a pjax refresh without a full page load)
+          return el; // return as is
+        }
         var msu = res.mostsigunit;
         dateTime = initialRedact(el, dateTime, msu);
         const prep = (msu == "year" || msu == "month") ? "in" : "on";
