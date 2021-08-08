@@ -12,6 +12,10 @@ const ghBaseUrlTypes = {
   userpulls: /^\/pulls\/?$/i,
   user: /^\/[^/]+\/?$/i,
 };
+const ghOrgUrlTypes = {
+  // prefixed with /orgs/[^/]+/
+  orgrepos: /^\/repositories\/?$/i,
+};
 const ghRepoUrlTypes = {
   compare: /^\/compare\/[^/]+\/?$/i,
   commits: /^\/commits\//i,
@@ -447,7 +451,10 @@ function calcDistanceToClosestSibling(el) {
         return cnt;
       }, 0);
       let types;
-      if (numPathComp < 2) {
+      if (path.startsWith("/orgs/")) {
+        path = path.replace(/^\/orgs\/[^/]+/i, "");
+        types = ghOrgUrlTypes;
+      } else if (numPathComp < 2) {
         types = ghBaseUrlTypes;
       } else {
         path = path.replace(/^(\/[^/]+){2}/i, "");
