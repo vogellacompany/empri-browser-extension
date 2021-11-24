@@ -40,7 +40,7 @@ Together with the project partner vogella, the University of Hamburg has impleme
 The extension is available for installation in the add-on stores of the following browsers:
 
 - [Chrome](https://chrome.google.com/webstore/detail/github-privacy/dnnaopdmfcnmfjidhjchjcpeloangenl)
-- [Firefox](https://addons.mozilla.org/de/firefox/addon/github-privacy/)
+- [Firefox](https://addons.mozilla.org/firefox/addon/github-privacy/)
 - [Edge](https://microsoftedge.microsoft.com/addons/detail/github-privacy/ejgfdgcflfnoedplfojcmekoilmafddl)
 - [Opera](https://addons.opera.com/de/extensions/details/github-privacy/)
 
