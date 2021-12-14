@@ -472,7 +472,7 @@ function calcDistanceToClosestSibling(el) {
     }
 
     function redactTimestamps() {
-      document.querySelectorAll("time-ago, relative-time").forEach((el) => {
+      document.querySelectorAll("time-ago, relative-time, local-time").forEach((el) => {
         if (!tsNeedsProcessing(el)) return;
         redactTimeElement(el);
       });
