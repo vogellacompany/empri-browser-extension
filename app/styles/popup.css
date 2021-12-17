@@ -29,6 +29,14 @@ button {
   height: 0;
 }
 
+.notransition:before {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  -ms-transition: none !important;
+  transition: none !important;
+}
+
 .slider {
   position: absolute;
   cursor: pointer;

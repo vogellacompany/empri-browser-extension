@@ -30,6 +30,7 @@ function toggleOnOff(e) {
         browser.browserAction.setIcon({ path: icon });
       });
   });
+  document.querySelector("#slider").classList.remove("notransition");
 }
 
 function onOpened() {
